@@ -16,9 +16,9 @@ import android.widget.FrameLayout;
 public class BalloonView extends FrameLayout {
 
     private Balloon mBalloon;
-
     private MajorTag mMajorTag;
-    private SubTag[] mSubTags;
+
+    private SubTagView[] mSubTags;
 
     public BalloonView(@NonNull Context context) {
         super(context);
@@ -37,9 +37,17 @@ public class BalloonView extends FrameLayout {
         super(context, attrs, defStyleAttr, defStyleRes);
     }
 
+    private void initBalloon(){
+        mBalloon = new Balloon(getWidth()/4,getWidth()/2,getHeight()/2);
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+    }
+
+    public void setText(String text){
+
     }
 
     @Override
@@ -55,11 +63,12 @@ public class BalloonView extends FrameLayout {
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
+        initBalloon();
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-
+        mBalloon.draw(canvas);
     }
 
     /**
@@ -67,7 +76,7 @@ public class BalloonView extends FrameLayout {
      */
     public void updateFlow() {
         if (mBalloon != null) {
-
+            mBalloon.update();
         }
     }
 
@@ -78,5 +87,9 @@ public class BalloonView extends FrameLayout {
 
     public void releaseResources() {
 
+    }
+
+    public Balloon getModel(){
+        return mBalloon;
     }
 }
