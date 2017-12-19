@@ -17,11 +17,15 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBalloonContainer = findViewById(R.id.test);
-        for (int i = 0 ; i<= 6 ; i++){
+        for (int i = 0 ; i< 6 ; i++){
             BalloonView view= new BalloonView(this);
-            FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            mBalloonContainer.addBalloon(i,view);
+            mBalloonContainer.addBalloon("这是"+i);
         }
-        mBalloonContainer.startFlow();
+        mBalloonContainer.post(new Runnable() {
+            @Override
+            public void run() {
+                mBalloonContainer.startFlow();
+            }
+        });
     }
 }

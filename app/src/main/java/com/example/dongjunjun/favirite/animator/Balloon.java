@@ -1,13 +1,25 @@
 package com.example.dongjunjun.favirite.animator;
 
 import android.graphics.Canvas;
+import android.graphics.RectF;
 import android.support.annotation.IntDef;
 
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.ANIM;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.ES;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.N;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.RED_CENTER;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.S;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.W;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.WN;
+import static com.example.dongjunjun.favirite.animator.helper.Direction.WS;
 
 /**
  * 气泡
@@ -18,26 +30,24 @@ public class Balloon extends Renderable {
 
     private float radius;
     private float scale = 1f;
-    private int num;//气泡编号
 
     private Balloon left;
     private Balloon top;
     private Balloon right;
     private Balloon bottom;
 
-    private int state = NORMAL;
+    private int state = NONE;
 
     public Balloon(float radius, float x, float y) {
         super(x, y);
         this.radius = radius;
     }
 
-    public int getNum() {
-        return num;
-    }
-
-    public void setNum(int num) {
-        this.num = num;
+    public void calculateState() {
+        if (state == NONE) {
+            state = NORMAL;
+            normalRebound.set(layoutBoundary);
+        }
     }
 
     public Balloon getLeft() {
@@ -113,8 +123,47 @@ public class Balloon extends Renderable {
         FlowHelper.updateFlow(this);
     }
 
-    @IntDef({NORMAL, EXPAND, ANIM})
+    @Override
+    public boolean checkedInLimit() {
+        return boundary.contains(layoutBoundary);
+    }
+
+    @Override
+    public int checkedLimitDirection() {
+        int l = layoutBoundary.left;
+        int t = layoutBoundary.top;
+        int r = layoutBoundary.right;
+        int b = layoutBoundary.bottom;
+        if (l<boundary.left){
+            if (t<boundary.top){
+                return WN;
+            }
+            if (b>boundary.bottom){
+                return WS;
+            }
+            return W;
+        }
+        if (r>boundary.right){
+            if (t<boundary.top){
+                return EN;
+            }
+            if (b>boundary.bottom){
+                return ES;
+            }
+            return E;
+        }
+        if (t<boundary.top){
+            return N;
+        }
+        if (b>boundary.bottom){
+            return S;
+        }
+        return RED_CENTER;
+    }
+
+    @IntDef({NONE, NORMAL, EXPAND, ANIM})
     @interface State {
+        int NONE = -1;//初始时无值，需要主动去赋值
         int NORMAL = 0;
         int EXPAND = 1;
         int ANIM = 2;

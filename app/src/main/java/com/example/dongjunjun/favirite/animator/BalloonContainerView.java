@@ -2,23 +2,31 @@ package com.example.dongjunjun.favirite.animator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.util.AttributeSet;
-import android.util.SparseArray;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.dongjunjun.favirite.R;
 
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.BIG_BALLOON_PROCENT;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_CAPACITY;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.INIT_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.LINE_COUNT;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.ODD_TOP;
 
 /**
  * 盛放Balloon的容器View
- * 移除Balloon时会更新布局，若在绘制完成后
- * 再添加Balloon，需手动更新布局
+ * 移除Balloon时会更新布局，
+ * 若在绘制完成后再添加Balloon，需手动更新布局
  * 动态改变气泡的数量需谨慎
  * Created by dongjunjun on 2017/12/12.
  */
@@ -27,13 +35,13 @@ public class BalloonContainerView extends FrameLayout {
 
     private static final String TAG = "BalloonContainerView";
 
-    private SparseArray<BalloonView> mBalloons;
+    private List<BalloonView> mBalloons = new ArrayList<>(BALLOON_CAPACITY);
     private BalloonViewLifeCallBack mBalloonCallBack;
     private BalloonHandlerThread mHandlerThread;
-    private BalloonView mSelectedBalloonView;
 
     private int rawHeight;//一行的高度
 
+    FlowRunnable flowRunnable = new FlowRunnable();
 
     public BalloonContainerView(Context context) {
         super(context);
@@ -46,16 +54,14 @@ public class BalloonContainerView extends FrameLayout {
         initAttrs(attrs);
     }
 
-    public BalloonContainerView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        initData();
-        initAttrs(attrs);
-    }
-
     private void initData() {
         mBalloonCallBack = new BalloonViewLifeCallBack();
         mHandlerThread = new BalloonHandlerThread(this, TAG);
-        mBalloons = new SparseArray<>(10);
+    }
+
+    @Override
+    public void bringToFront() {
+        super.bringToFront();
     }
 
     private void initAttrs(AttributeSet attrs) {
@@ -65,8 +71,8 @@ public class BalloonContainerView extends FrameLayout {
             for (int i = 0; i < N; i++) {
                 int attr = array.getIndex(i);
                 switch (attr) {
-                    case R.styleable.BalloonContainerView_row_height:
-                        setRawHeight(array.getInteger(attr, 0));
+                    case R.styleable.BalloonContainerView_raw_height:
+                        setRawHeight(array.getDimensionPixelSize(attr, 0));
                         break;
                 }
             }
@@ -94,17 +100,24 @@ public class BalloonContainerView extends FrameLayout {
     public void addBalloon(int i, BalloonView balloonView) {
         synchronized (mBalloons) {
             balloonView.getModel().setNum(i);
-            mBalloons.put(i, balloonView);
+            mBalloons.add(balloonView);
+            addView(balloonView);
         }
     }
 
     public void removeBalloon(BalloonView balloonView) {
         synchronized (mBalloons) {
-            int key = mBalloons.indexOfValue(balloonView);
+            int key = getIndexBalloon(balloonView);
             if (key != -1) {
                 mBalloons.remove(key);
-                requestLayout();
-                invalidate();
+            }
+        }
+    }
+
+    public void removeBalloon(int i) {
+        synchronized (mBalloons) {
+            if (i >= 0 && i < mBalloons.size()) {
+                mBalloons.remove(i);
             }
         }
     }
@@ -113,8 +126,16 @@ public class BalloonContainerView extends FrameLayout {
         synchronized (mBalloons) {
             mBalloons.clear();
         }
-        requestLayout();
-        invalidate();
+    }
+
+    public void changeBalloonToFront(BalloonView balloonView) {
+        synchronized (mBalloons) {
+            int index = mBalloons.indexOf(balloonView);
+            if (index != -1) {
+                mBalloons.remove(index);
+                mBalloons.add(balloonView);
+            }
+        }
     }
 
     @Override
@@ -123,15 +144,16 @@ public class BalloonContainerView extends FrameLayout {
     }
 
     private void startThread() {
-        if (mHandlerThread != null && mHandlerThread.isAlive()) {
+        if (mHandlerThread != null) {
             mHandlerThread.start();
+            mHandlerThread.initHandler();
+            mHandlerThread.sendFlowRequest();
         }
     }
 
     public void startFlow() {
         if (mHandlerThread != null) {
             startThread();
-            mHandlerThread.sendFlowRequest();
         }
     }
 
@@ -157,36 +179,27 @@ public class BalloonContainerView extends FrameLayout {
             heightSize = 0;
             setMeasuredDimension(widthSize, heightSize);
         } else {
-            int childWidthMeasureSpec = 0;
-            int childHeightMeasureSpec = 0;
-            if (mSelectedBalloonView == null) {
-                childWidthMeasureSpec = widthSize / LINE_COUNT;
-                childHeightMeasureSpec = rawHeight;
-                int childCount = getChildCount();
-                for (int i = 0; i < childCount; i++) {
-                    View child = getChildAt(i);
-                    child.measure(MeasureSpec.makeMeasureSpec(childWidthMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
-                }
-            } else {
-
-                int childCount = getChildCount();
-                for (int i = 0; i < childCount; i++) {
-                    View child = getChildAt(i);
-                    if (child == mSelectedBalloonView) {
-                        int size = (int) (heightSize * BIG_BALLOON_PROCENT);
-                        child.measure(MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(size, MeasureSpec.EXACTLY));
+            int childWidthMeasureSpec = widthSize / LINE_COUNT;
+            int childHeightMeasureSpec = (int) (rawHeight * INIT_RADIUS);
+            int childCount = getChildCount();
+            for (int i = 0; i < childCount; i++) {
+                View child = getChildAt(i);
+                if (child instanceof BalloonView) {
+                    Balloon balloon = ((BalloonView) child).getModel();
+                    if (balloon.getState() == NONE) {
+                        child.measure(MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
                     } else {
-                        child.measure(MeasureSpec.makeMeasureSpec(childWidthMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
+                        child.measure(MeasureSpec.makeMeasureSpec(balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
                     }
                 }
             }
-            setMeasuredDimension(getMeasuredWidth(), getRaw() * rawHeight);
         }
+        setMeasuredDimension(widthSize, getRawCount() * rawHeight);
     }
 
-    private int getRaw() {
+    private int getRawCount() {
         int count = mBalloons.size();
-        return count == 0 ? 0 : count % LINE_COUNT == 0 ? count / LINE_COUNT : count / LINE_COUNT + 1;
+        return count == 0 ? 0 : BalloonConstant.getRaw(count) + 1;
     }
 
     @Override
@@ -196,28 +209,60 @@ public class BalloonContainerView extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int raw = getRaw();
-        for (int i = 0; i < raw; i++) {
-            handleHorizontalLayout(raw);
+        layoutChild();
+    }
+
+    private void layoutChild() {
+        int size = mBalloons.size();
+        int width = getMeasuredWidth();
+        int balloonWidth = width / LINE_COUNT;
+        int offsetX = Integer.MIN_VALUE;
+        for (int i = 0; i < size; i++) {
+            BalloonView balloonView = mBalloons.get(i);
+            Balloon balloon = balloonView.getModel();
+            if (balloon.getState() == NONE) {
+                if (offsetX == Integer.MIN_VALUE) {
+                    offsetX = (balloonWidth - balloonView.getMeasuredWidth()) / 2;
+                }
+                initChildrenLayout(i, balloonView, balloonWidth, offsetX);
+            }
+            Rect layout = balloon.getLayoutBoundary();
+            balloonView.layout(layout.left, layout.top, layout.right, layout.bottom);
         }
     }
 
-    /**
-     * @param raw 当前行数
-     */
-    private void handleHorizontalLayout(int raw) {
+    @Override
+    public void bringChildToFront(View child) {
+        if (child instanceof BalloonView) {
+            changeBalloonToFront((BalloonView) child);
+        }
+        super.bringChildToFront(child);
+    }
+
+    private int getIndexBalloon(BalloonView child) {
+        return mBalloons.indexOf(child);
+    }
+
+    private void initChildrenLayout(int i, BalloonView balloonView, int balloonWidth, int offsetX) {
         if (mBalloons.size() == 0) {
             return;
         }
-        int width = getWidth();
-        int count = mBalloons.size();
-        int start = raw * count;
-        int end = Math.min(start + LINE_COUNT - 1, count);
-        int balloonWidth = width / LINE_COUNT;
-        for (int i = start; i <= end; i++) {
-            BalloonView balloonView = mBalloons.get(i);
-            int j = i % LINE_COUNT;
-            balloonView.layout(j * balloonWidth, raw * rawHeight, (j + 1) * balloonWidth, (raw + 1) * rawHeight);
+        Balloon balloon = balloonView.getModel();
+        int raw = BalloonConstant.getRaw(i);//行数
+        int column = BalloonConstant.getColumn(i);//列数
+        int offsetY;
+        if ((column & 1) != 0) {
+            //奇数行
+            offsetY = (int) (rawHeight * ODD_TOP);
+            balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
+            Rect rect = balloon.getLayoutBoundary();
+            balloon.setBoundary(rect.left-FLOW_MAX,0,rect.right+FLOW_MAX,rect.bottom+2*FLOW_MAX);
+        } else {
+            //偶数行
+            offsetY = (int) (rawHeight * EVEN_TOP);
+            balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
+            Rect rect = balloon.getLayoutBoundary();
+            balloon.setBoundary(rect.left-FLOW_MAX,rect.top-FLOW_MAX,rect.right+FLOW_MAX,rect.bottom+FLOW_MAX);
         }
     }
 
@@ -226,11 +271,15 @@ public class BalloonContainerView extends FrameLayout {
      */
     public void updateFlow() {
         synchronized (mBalloons) {
-            for (int i = 0; i <= mBalloons.size(); i++) {
+            for (int i = 0; i < mBalloons.size(); i++) {
                 BalloonView balloon = mBalloons.get(i);
                 balloon.updateFlow();
             }
         }
+    }
+
+    public void invalidateChildren() {
+        post(flowRunnable);
     }
 
     @Override
@@ -238,6 +287,17 @@ public class BalloonContainerView extends FrameLayout {
         super.onDetachedFromWindow();
         if (mHandlerThread != null) {
             mHandlerThread.quit();
+        }
+        removeCallbacks(flowRunnable);
+    }
+
+    class FlowRunnable implements Runnable {
+
+        @Override
+        public void run() {
+            updateFlow();
+            requestLayout();
+            postInvalidate();
         }
     }
 
@@ -253,16 +313,14 @@ public class BalloonContainerView extends FrameLayout {
             this.mContainerView = containerView;
         }
 
-        @Override
-        protected void onLooperPrepared() {
+        public void initHandler() {
             mFlowHandler = new Handler() {
                 @Override
                 public void handleMessage(Message msg) {
                     switch (msg.what) {
                         case FLOW:
                             if (mContainerView != null) {
-                                mContainerView.updateFlow();
-                                mContainerView.postInvalidate();
+                                mContainerView.invalidateChildren();
                             }
                             sendFlowRequest();
                             break;

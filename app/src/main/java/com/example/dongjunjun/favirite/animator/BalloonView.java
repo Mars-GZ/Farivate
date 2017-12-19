@@ -1,12 +1,21 @@
 package com.example.dongjunjun.favirite.animator;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.widget.FrameLayout;
+
+import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.INIT_RADIUS;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.ODD_TOP;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_CAPACITY;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_SIZE;
 
 /**
  * 盛放兴趣标签的View
@@ -18,27 +27,30 @@ public class BalloonView extends FrameLayout {
     private Balloon mBalloon;
     private MajorTag mMajorTag;
 
-    private SubTagView[] mSubTags;
+    private SparseArray<SubTagView> mSubTags;
 
     public BalloonView(@NonNull Context context) {
         super(context);
+        init();
     }
 
     public BalloonView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
     }
 
-    public BalloonView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    private void init() {
+        initBalloon();
+        initTags();
     }
 
-    @TargetApi(21)
-    public BalloonView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+    private void initBalloon() {
+        mBalloon = new Balloon(0, 0, 0);
     }
 
-    private void initBalloon(){
-        mBalloon = new Balloon(getWidth()/4,getWidth()/2,getHeight()/2);
+    private void initTags() {
+        mMajorTag = new MajorTag(0, 0);
+        mSubTags = new SparseArray<>(TAG_CAPACITY);
     }
 
     @Override
@@ -46,8 +58,8 @@ public class BalloonView extends FrameLayout {
         super.onAttachedToWindow();
     }
 
-    public void setText(String text){
-
+    public void setText(String text) {
+        mMajorTag.setText(text);
     }
 
     @Override
@@ -62,13 +74,40 @@ public class BalloonView extends FrameLayout {
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        super.onLayout(changed, l, t, r, b);
-        initBalloon();
+        layoutChildren();
+    }
+
+    private void layoutChildren() {
+        boolean isNone = isNone();
+        if (isNone) {
+            initChildrenWithData();
+        }
+        mBalloon.calculateState();
+    }
+
+    private void initChildrenWithData() {
+        //init Balloon
+        mBalloon.setX(getMeasuredWidth() / 2);
+        mBalloon.setY(getMeasuredHeight() / 2);
+        mBalloon.setRadius(getMeasuredWidth() / 2);
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setColor(Color.YELLOW);
+        mBalloon.setPaint(paint);
+
+        //init Tag
+        mMajorTag.setX(mBalloon.getX());
+        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        paint.setTextSize(TAG_SIZE);
+        paint.setTextAlign(Paint.Align.CENTER);
+        Paint.FontMetrics metrics = paint.getFontMetrics();
+        mMajorTag.setBaseLine((getMeasuredHeight() - metrics.bottom + metrics.top) / 2 - metrics.top);
+        mMajorTag.setPaint(paint);
     }
 
     @Override
-    protected void onDraw(Canvas canvas) {
+    protected void dispatchDraw(Canvas canvas) {
         mBalloon.draw(canvas);
+        mMajorTag.draw(canvas);
     }
 
     /**
@@ -89,7 +128,11 @@ public class BalloonView extends FrameLayout {
 
     }
 
-    public Balloon getModel(){
+    public Balloon getModel() {
         return mBalloon;
+    }
+
+    private boolean isNone() {
+        return mBalloon.getState() == NONE;
     }
 }
