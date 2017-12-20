@@ -26,7 +26,7 @@ public abstract class Renderable {
 
     protected RectF layoutBoundary = new RectF();//view的布局边界,相对于view的父布局
     protected RectF normalRebound = new RectF();//view的初始布局边界
-    protected RectF boundary = new RectF();//view的浮动边界
+//    protected RectF boundary = new RectF();//view的浮动边界
 
     public Renderable(float x, float y) {
         this.x = x;
@@ -61,17 +61,17 @@ public abstract class Renderable {
         this.layoutBoundary.set(l, t, r, b);
     }
 
-    public RectF getBoundary() {
-        return boundary;
-    }
-
-    public void setBoundary(RectF boundary) {
-        this.boundary.set(boundary);
-    }
-
-    public void setBoundary(float l, float t, float r, float b) {
-        this.boundary.set(l, t, r, b);
-    }
+//    public RectF getBoundary() {
+//        return boundary;
+//    }
+//
+//    public void setBoundary(RectF boundary) {
+//        this.boundary.set(boundary);
+//    }
+//
+//    public void setBoundary(float l, float t, float r, float b) {
+//        this.boundary.set(l, t, r, b);
+//    }
 
     public void setPaint(Paint paint) {
         this.paint = paint;
@@ -101,12 +101,20 @@ public abstract class Renderable {
         this.translationX = translationX;
     }
 
+    public void addTranslationX(float dx){
+        this.translationX+=dx;
+    }
+
     public float getTranslationX() {
         return translationX;
     }
 
     public void setTranslationY(float translationY) {
         this.translationY = translationY;
+    }
+
+    public void addTranslationY(float dy){
+        this.translationY+=dy;
     }
 
     public float getTranslationY() {
@@ -118,7 +126,7 @@ public abstract class Renderable {
     public void destroy() {
     }
 
-    protected void update() {
+    protected void update(Renderable... fix) {
 
     }
 
@@ -128,7 +136,8 @@ public abstract class Renderable {
      * @return
      */
     public boolean checkedInLimit() {
-        return boundary.contains((int) (x + translationX), (int) (y + translationY));
+        return false;
+//        return boundary.contains((int) (x + translationX), (int) (y + translationY));
     }
 
     /**

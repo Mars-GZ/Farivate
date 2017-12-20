@@ -119,43 +119,42 @@ public class Balloon extends Renderable {
      * 根据当前位置确定下次浮动的坐标
      */
     @Override
-    protected void update() {
-        FlowHelper.updateFlow(this);
-    }
-
-    @Override
-    public boolean checkedInLimit() {
-        return boundary.contains(layoutBoundary);
+    protected void update(Renderable... fix) {
+        FlowHelper.updateFlow(this,fix);
     }
 
     @Override
     public int checkedLimitDirection() {
-        float l = layoutBoundary.left;
-        float t = layoutBoundary.top;
-        float r = layoutBoundary.right;
-        float b = layoutBoundary.bottom;
-        if (l<boundary.left){
-            if (t<boundary.top){
+        float l = 0;
+        float t = 0;
+        float r = layoutBoundary.width();
+        float b = layoutBoundary.height();
+        int sl = (int) (x + translationX - radius + 0.5);
+        int st = (int) (y + translationY - radius + 0.5);
+        int sr = (int) (x + translationX + radius + 0.5);
+        int sb = (int) (y + translationY + radius + 0.5);
+        if (sl < l) {
+            if (st < t) {
                 return WN;
             }
-            if (b>boundary.bottom){
+            if (sb > b) {
                 return WS;
             }
             return W;
         }
-        if (r>boundary.right){
-            if (t<boundary.top){
+        if (sr > r) {
+            if (st < t) {
                 return EN;
             }
-            if (b>boundary.bottom){
+            if (sb > b) {
                 return ES;
             }
             return E;
         }
-        if (t<boundary.top){
+        if (st < t) {
             return N;
         }
-        if (b>boundary.bottom){
+        if (sb > b) {
             return S;
         }
         return RED_CENTER;

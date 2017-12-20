@@ -41,7 +41,7 @@ public class FlowHelper {
      *
      * @param renderable
      */
-    public static void updateFlow(Renderable renderable) {
+    public static void updateFlow(Renderable renderable,Renderable... fix) {
         if (renderable == null) {
             return;
         }
@@ -50,14 +50,20 @@ public class FlowHelper {
             renderable.setDirection(direction);
         }
         if ((direction & N) != 0) {
-            renderable.getLayoutBoundary().offset(0, -STEP);
+            renderable.addTranslationY(-STEP);
         } else if ((direction & S) != 0) {
-            renderable.getLayoutBoundary().offset(0, STEP);
+            renderable.addTranslationY(STEP);
         }
         if ((direction & E) != 0) {
-            renderable.getLayoutBoundary().offset(STEP, 0);
+            renderable.addTranslationX(STEP);
         } else if ((direction & W) != 0) {
-            renderable.getLayoutBoundary().offset(-STEP, 0);
+            renderable.addTranslationX(-STEP);
+        }
+        if (fix!=null){
+            for (Renderable renderable1:fix){
+                renderable1.setTranslationX(renderable.getTranslationX());
+                renderable1.setTranslationY(renderable.getTranslationY());
+            }
         }
     }
 
@@ -135,40 +141,6 @@ public class FlowHelper {
             return false;
         }
         return renderable.checkedInLimit();
-    }
-
-    /**
-     * 检查超出边界
-     *
-     * @param renderable
-     * @return
-     */
-    private static void checkInContent(Renderable renderable) {
-        if (renderable == null) {
-            return;
-        }
-        float translationX = renderable.getTranslationX();
-        float translationY = renderable.getTranslationY();
-        float x = renderable.getX();
-        float y = renderable.getY();
-        RectF rect = renderable.getBoundary();
-        if (rect == null) {
-            return;
-        }
-        float horizontal = x + translationX;
-        float vertical = y + translationY;
-        if (horizontal < rect.left) {
-            translationX += 2 * STEP;
-        } else if (horizontal > rect.right) {
-            translationX -= 2 * STEP;
-        }
-        if (vertical < rect.top) {
-            translationY += 2 * STEP;
-        } else if (vertical > rect.bottom) {
-            translationY -= 2 * STEP;
-        }
-        renderable.setTranslationX(translationX);
-        renderable.setTranslationY(translationY);
     }
 
     /**

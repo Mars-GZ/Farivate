@@ -11,9 +11,7 @@ import android.util.SparseArray;
 import android.widget.FrameLayout;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.INIT_RADIUS;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.ODD_TOP;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_CAPACITY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_SIZE;
 
@@ -40,6 +38,7 @@ public class BalloonView extends FrameLayout {
     }
 
     private void init() {
+        setWillNotDraw(false);
         initBalloon();
         initTags();
     }
@@ -86,10 +85,20 @@ public class BalloonView extends FrameLayout {
     }
 
     private void initChildrenWithData() {
+        int width = getMeasuredWidth();
+        int height = getMeasuredHeight();
+
         //init Balloon
-        mBalloon.setX(getMeasuredWidth() / 2);
-        mBalloon.setY(getMeasuredHeight() / 2);
-        mBalloon.setRadius(getMeasuredWidth() / 2);
+        mBalloon.setRadius((width - 2 * FLOW_MAX) / 2);
+        mBalloon.setX(width / 2);
+        int num = BalloonConstant.getColumn(mBalloon.getNum());
+        if ((num & 1) == 0) {
+            //偶数列
+            mBalloon.setY(height / 2);
+        } else {
+            //奇数列
+            mBalloon.setY(mBalloon.getRadius());
+        }
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setColor(Color.YELLOW);
         mBalloon.setPaint(paint);
@@ -100,12 +109,12 @@ public class BalloonView extends FrameLayout {
         paint.setTextSize(TAG_SIZE);
         paint.setTextAlign(Paint.Align.CENTER);
         Paint.FontMetrics metrics = paint.getFontMetrics();
-        mMajorTag.setBaseLine((getMeasuredHeight() - metrics.bottom + metrics.top) / 2 - metrics.top);
+        mMajorTag.setBaseLine((int) ((height + (mBalloon.getY() - height / 2) - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
         mMajorTag.setPaint(paint);
     }
 
     @Override
-    protected void dispatchDraw(Canvas canvas) {
+    protected void onDraw(Canvas canvas) {
         mBalloon.draw(canvas);
         mMajorTag.draw(canvas);
     }
@@ -115,7 +124,7 @@ public class BalloonView extends FrameLayout {
      */
     public void updateFlow() {
         if (mBalloon != null) {
-            mBalloon.update();
+            mBalloon.update(mMajorTag);
         }
     }
 

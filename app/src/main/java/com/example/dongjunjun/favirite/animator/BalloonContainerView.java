@@ -2,7 +2,6 @@ package com.example.dongjunjun.favirite.animator;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -182,7 +181,7 @@ public class BalloonContainerView extends FrameLayout {
             setMeasuredDimension(widthSize, heightSize);
         } else {
             int childWidthMeasureSpec = widthSize / LINE_COUNT;
-            int childHeightMeasureSpec = (int) (rawHeight * INIT_RADIUS);
+            int childHeightMeasureSpec = Math.min((int) (rawHeight * INIT_RADIUS) + 2 * FLOW_MAX, rawHeight);
             int childCount = getChildCount();
             for (int i = 0; i < childCount; i++) {
                 View child = getChildAt(i);
@@ -191,7 +190,7 @@ public class BalloonContainerView extends FrameLayout {
                     if (balloon.getState() == NONE) {
                         child.measure(MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
                     } else {
-                        child.measure(MeasureSpec.makeMeasureSpec((int)balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int)balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
+                        child.measure(MeasureSpec.makeMeasureSpec((int) balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int) balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
                     }
                 }
             }
@@ -229,7 +228,7 @@ public class BalloonContainerView extends FrameLayout {
                 initChildrenLayout(i, balloonView, balloonWidth, offsetX);
             }
             RectF layout = balloon.getLayoutBoundary();
-            balloonView.layout((int)layout.left, (int)layout.top, (int)layout.right, (int)layout.bottom);
+            balloonView.layout((int) layout.left, (int) layout.top, (int) layout.right, (int) layout.bottom);
         }
     }
 
@@ -256,20 +255,15 @@ public class BalloonContainerView extends FrameLayout {
         if ((column & 1) != 0) {
             //奇数行
             offsetY = (int) (rawHeight * ODD_TOP);
-            balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
-            RectF rect = balloon.getLayoutBoundary();
-            balloon.setBoundary(rect.left - FLOW_MAX, raw * rawHeight, rect.right + FLOW_MAX, rect.bottom + 2 * FLOW_MAX);
         } else {
             //偶数行
             offsetY = (int) (rawHeight * EVEN_TOP);
-            balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
-            RectF rect = balloon.getLayoutBoundary();
-            balloon.setBoundary(rect.left - FLOW_MAX, rect.top - FLOW_MAX, rect.right + FLOW_MAX, rect.bottom + FLOW_MAX);
         }
+        balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, column * balloonWidth + balloonView.getMeasuredWidth() + offsetX, raw * rawHeight + balloonView.getMeasuredHeight() + offsetY);
     }
 
     /**
-     * 更新浮动坐标,非UI线程
+     * 更新浮动坐标
      */
     public void updateFlow() {
         synchronized (mBalloons) {
@@ -281,6 +275,7 @@ public class BalloonContainerView extends FrameLayout {
     }
 
     public void invalidateChildren() {
+        updateFlow();
         post(flowRunnable);
     }
 
@@ -297,9 +292,9 @@ public class BalloonContainerView extends FrameLayout {
 
         @Override
         public void run() {
-            updateFlow();
-            requestLayout();
-            postInvalidate();
+            for (BalloonView balloonView:mBalloons){
+                balloonView.postInvalidate();
+            }
         }
     }
 
