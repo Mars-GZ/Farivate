@@ -1,5 +1,6 @@
 package com.example.dongjunjun.favirite.animator;
 
+import android.animation.AnimatorSet;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.RectF;
@@ -12,6 +13,8 @@ import android.widget.FrameLayout;
 
 import com.example.dongjunjun.favirite.R;
 import com.example.dongjunjun.favirite.animator.event.FlowEvent;
+import com.example.dongjunjun.favirite.animator.event.SelectBalloonEvent;
+import com.example.dongjunjun.favirite.animator.helper.AnimatorHelper;
 import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -46,6 +49,7 @@ public class BalloonContainerView extends FrameLayout {
     private BalloonViewLifeCallBack mBalloonCallBack;
     private BalloonHandlerThread mHandlerThread;
     private BalloonItemClickListener mItemCLickListener;
+    private BalloonView mSelectBalloonView;
 
     private int rawHeight;//一行的高度
 
@@ -106,7 +110,9 @@ public class BalloonContainerView extends FrameLayout {
 
     public void addBalloon(int i, BalloonView balloonView) {
         synchronized (mBalloons) {
+            balloonView.setItemClickListener(mItemCLickListener);
             balloonView.getModel().setNum(i);
+            balloonView.getModel().setPosition(i);
             mBalloons.add(balloonView);
             addView(balloonView);
         }
@@ -149,6 +155,9 @@ public class BalloonContainerView extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         EventBus.getDefault().register(this);
+        for (BalloonView balloonView : mBalloons) {
+            balloonView.getModel().setState(NONE);
+        }
     }
 
     private void startThread() {
@@ -207,7 +216,9 @@ public class BalloonContainerView extends FrameLayout {
 
     private int getRawCount() {
         int count = mBalloons.size();
-        return count == 0 ? 0 : BalloonConstant.getRaw(count) + 1;
+        int lines = count == 0 ? 0 : BalloonConstant.getRaw(count) + 1;
+        BalloonConstant.setLines(lines);
+        return lines;
     }
 
     @Override
@@ -260,10 +271,10 @@ public class BalloonContainerView extends FrameLayout {
         int column = BalloonConstant.getColumn(i);//列数
         int offsetY;
         if ((column & 1) != 0) {
-            //奇数行
+            //奇数列
             offsetY = (int) (rawHeight * ODD_TOP);
         } else {
-            //偶数行
+            //偶数列
             offsetY = (int) (rawHeight * EVEN_TOP);
         }
         balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, column * balloonWidth + balloonView.getMeasuredWidth() + offsetX, raw * rawHeight + balloonView.getMeasuredHeight() + offsetY);
@@ -294,16 +305,52 @@ public class BalloonContainerView extends FrameLayout {
             mHandlerThread.quit();
         }
         removeCallbacks(flowRunnable);
+        AnimatorHelper.getInstance().cancelAllAnimator();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onFlowEvent(FlowEvent event){
-        if (event!=null&&event.cancel){
+    public void onFlowEvent(FlowEvent event) {
+        if (event != null && event.cancel) {
             stopFlow();
-        }else {
-            if (mHandlerThread!=null){
+        } else {
+            if (mHandlerThread != null) {
                 mHandlerThread.sendFlowRequest();
             }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSelectBalloonEvent(SelectBalloonEvent event) {
+        if (event == null || event.position == -1) {
+            return;
+        } else {
+            BalloonView balloonView = mBalloons.get(event.position);
+            changePosition(balloonView);
+            if (mSelectBalloonView != null) {
+                Balloon selectBalloon = mSelectBalloonView.getModel();
+                Balloon normalBalloon = balloonView.getModel();
+                selectBalloon.setState(Balloon.State.EXPAND_TO_SMALL);
+                normalBalloon.setState(Balloon.State.SMALL_TO_EXPAND);
+                AnimatorHelper.getInstance().balloonsPlayTogether(selectBalloon, normalBalloon);
+            } else {
+                Balloon normalBalloon = balloonView.getModel();
+                normalBalloon.setState(Balloon.State.NORMAL_TO_EXPAND);
+                for (BalloonView balloonView1 : mBalloons) {
+                    if (balloonView1 != balloonView) {
+                        balloonView1.getModel().setState(Balloon.State.NORMAL_TO_SMALL);
+                    }
+                }
+                AnimatorHelper.getInstance().balloonsPlayTogether(mBalloons);
+            }
+        }
+    }
+
+    private void changePosition(BalloonView balloonView) {
+        if (mSelectBalloonView != null && balloonView != null && mSelectBalloonView != balloonView) {
+            int selectPos = mSelectBalloonView.getModel().getPosition();
+            int normalPos = balloonView.getModel().getPosition();
+            balloonView.getModel().setPosition(selectPos);
+            mSelectBalloonView.getModel().setPosition(normalPos);
         }
     }
 

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.dongjunjun.favirite.animator.event.FlowEvent;
+import com.example.dongjunjun.favirite.animator.helper.AnimatorHelper;
 import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -88,12 +89,14 @@ public class BalloonView extends FrameLayout {
         if (mGestureCompat.onTouchEvent(event)) {
             float x = event.getX();
             float y = event.getY();
-            if (mBalloon.isCircle(x, y)) {
-                EventBus.getDefault().post(new FlowEvent(true));
-                if (mItemClickListener != null) {
-                    mItemClickListener.onItemClick(mMajorTag, mBalloon.getNum(), -1);
+            if (AnimatorHelper.getInstance().canPlayAnimator()) {
+                if (mBalloon.isCircle(x, y)) {
+                    EventBus.getDefault().post(new FlowEvent(true));
+                    if (mItemClickListener != null) {
+                        mItemClickListener.onItemClick(mMajorTag, mBalloon.getNum(), -1);
+                    }
+                    return true;
                 }
-                return true;
             }
         }
         return super.onTouchEvent(event);

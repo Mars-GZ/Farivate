@@ -1,16 +1,17 @@
 package com.example.dongjunjun.favirite.animator;
 
+import android.animation.ValueAnimator;
 import android.graphics.Canvas;
-import android.graphics.RectF;
 import android.support.annotation.IntDef;
 
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
 
-import static com.example.dongjunjun.favirite.animator.Balloon.State.ANIM;
-import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND_TO_SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_EXPAND;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_SMALL;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL_TO_EXPAND;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.ES;
@@ -38,6 +39,10 @@ public class Balloon extends Renderable {
 
     private int state = NONE;
 
+    int position;//位置,和编号不一样
+
+    private ValueAnimator animator;
+
     public Balloon(float radius, float x, float y) {
         super(x, y);
         this.radius = radius;
@@ -48,6 +53,36 @@ public class Balloon extends Renderable {
             state = NORMAL;
             normalRebound.set(layoutBoundary);
         }
+    }
+
+    public ValueAnimator getAnimator() {
+        initAnimator();
+        return animator;
+    }
+
+    private void initAnimator() {
+        switch (state){
+            case NORMAL_TO_EXPAND:
+
+                break;
+            case NORMAL_TO_SMALL:
+
+                break;
+            case EXPAND_TO_SMALL:
+
+                break;
+            case SMALL_TO_EXPAND:
+
+                break;
+        }
+    }
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 
     public Balloon getLeft() {
@@ -112,13 +147,13 @@ public class Balloon extends Renderable {
         float t = y + translationY - radius;
         float r = x + translationX + radius;
         float b = y + translationY + radius;
-        if (dx>=l&&dx<=r&&dy>=t&&dy<=b){
+        if (dx >= l && dx <= r && dy >= t && dy <= b) {
             return true;
         }
         return false;
     }
 
-    private void setState(@State int state) {
+    public void setState(@State int state) {
         this.state = state;
     }
 
@@ -171,11 +206,13 @@ public class Balloon extends Renderable {
         return RED_CENTER;
     }
 
-    @IntDef({NONE, NORMAL, EXPAND, ANIM})
+    @IntDef({NONE, NORMAL, NORMAL_TO_EXPAND, NORMAL_TO_SMALL, SMALL_TO_EXPAND, EXPAND_TO_SMALL})
     @interface State {
         int NONE = -1;//初始时无值，需要主动去赋值
         int NORMAL = 0;
-        int EXPAND = 1;
-        int ANIM = 2;
+        int NORMAL_TO_EXPAND = 1;
+        int NORMAL_TO_SMALL = 2;
+        int SMALL_TO_EXPAND = 3;
+        int EXPAND_TO_SMALL = 4;
     }
 }
