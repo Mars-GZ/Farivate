@@ -3,6 +3,7 @@ package com.example.dongjunjun.favirite.animator;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.graphics.RectF;
 
 import com.example.dongjunjun.favirite.animator.helper.Direction;
 
@@ -23,9 +24,9 @@ public abstract class Renderable {
     private @Direction
     int direction = Direction.RED_CENTER;//浮动方向
 
-    protected Rect layoutBoundary = new Rect();//view的布局边界,相对于view的父布局
-    protected Rect normalRebound = new Rect();//view的初始布局边界
-    protected Rect boundary = new Rect();//view的浮动边界
+    protected RectF layoutBoundary = new RectF();//view的布局边界,相对于view的父布局
+    protected RectF normalRebound = new RectF();//view的初始布局边界
+    protected RectF boundary = new RectF();//view的浮动边界
 
     public Renderable(float x, float y) {
         this.x = x;
@@ -48,27 +49,27 @@ public abstract class Renderable {
         this.direction = direction;
     }
 
-    public Rect getLayoutBoundary() {
+    public RectF getLayoutBoundary() {
         return layoutBoundary;
     }
 
-    public void setLayoutBoundary(Rect layoutBoundary) {
+    public void setLayoutBoundary(RectF layoutBoundary) {
         this.layoutBoundary = layoutBoundary;
     }
 
-    public void setLayoutBoundary(int l, int t, int r, int b) {
+    public void setLayoutBoundary(float l, float t, float r, float b) {
         this.layoutBoundary.set(l, t, r, b);
     }
 
-    public Rect getBoundary() {
+    public RectF getBoundary() {
         return boundary;
     }
 
-    public void setBoundary(Rect boundary) {
+    public void setBoundary(RectF boundary) {
         this.boundary.set(boundary);
     }
 
-    public void setBoundary(int l, int t, int r, int b) {
+    public void setBoundary(float l, float t, float r, float b) {
         this.boundary.set(l, t, r, b);
     }
 

@@ -18,7 +18,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mBalloonContainer = findViewById(R.id.test);
         for (int i = 0 ; i< 6 ; i++){
-            BalloonView view= new BalloonView(this);
             mBalloonContainer.addBalloon("这是"+i);
         }
         mBalloonContainer.post(new Runnable() {

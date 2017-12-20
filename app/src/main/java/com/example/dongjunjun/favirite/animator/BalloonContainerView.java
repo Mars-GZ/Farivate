@@ -3,6 +3,7 @@ package com.example.dongjunjun.favirite.animator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -18,6 +19,7 @@ import java.util.List;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_CAPACITY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_DELAY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.INIT_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.LINE_COUNT;
@@ -189,7 +191,7 @@ public class BalloonContainerView extends FrameLayout {
                     if (balloon.getState() == NONE) {
                         child.measure(MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
                     } else {
-                        child.measure(MeasureSpec.makeMeasureSpec(balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
+                        child.measure(MeasureSpec.makeMeasureSpec((int)balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int)balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
                     }
                 }
             }
@@ -226,8 +228,8 @@ public class BalloonContainerView extends FrameLayout {
                 }
                 initChildrenLayout(i, balloonView, balloonWidth, offsetX);
             }
-            Rect layout = balloon.getLayoutBoundary();
-            balloonView.layout(layout.left, layout.top, layout.right, layout.bottom);
+            RectF layout = balloon.getLayoutBoundary();
+            balloonView.layout((int)layout.left, (int)layout.top, (int)layout.right, (int)layout.bottom);
         }
     }
 
@@ -255,14 +257,14 @@ public class BalloonContainerView extends FrameLayout {
             //奇数行
             offsetY = (int) (rawHeight * ODD_TOP);
             balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
-            Rect rect = balloon.getLayoutBoundary();
-            balloon.setBoundary(rect.left-FLOW_MAX,0,rect.right+FLOW_MAX,rect.bottom+2*FLOW_MAX);
+            RectF rect = balloon.getLayoutBoundary();
+            balloon.setBoundary(rect.left - FLOW_MAX, raw * rawHeight, rect.right + FLOW_MAX, rect.bottom + 2 * FLOW_MAX);
         } else {
             //偶数行
             offsetY = (int) (rawHeight * EVEN_TOP);
             balloon.setLayoutBoundary(column * balloonWidth + offsetX, raw * rawHeight + offsetY, (column + 1) * balloonWidth + offsetX, (raw + 1) * rawHeight + offsetY);
-            Rect rect = balloon.getLayoutBoundary();
-            balloon.setBoundary(rect.left-FLOW_MAX,rect.top-FLOW_MAX,rect.right+FLOW_MAX,rect.bottom+FLOW_MAX);
+            RectF rect = balloon.getLayoutBoundary();
+            balloon.setBoundary(rect.left - FLOW_MAX, rect.top - FLOW_MAX, rect.right + FLOW_MAX, rect.bottom + FLOW_MAX);
         }
     }
 
@@ -333,7 +335,7 @@ public class BalloonContainerView extends FrameLayout {
             if (mFlowHandler.hasMessages(FLOW)) {
                 return;
             }
-            mFlowHandler.sendEmptyMessageDelayed(FLOW, 16);
+            mFlowHandler.sendEmptyMessageDelayed(FLOW, FLOW_DELAY);
         }
 
         public void stopFlow() {

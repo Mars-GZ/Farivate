@@ -49,7 +49,6 @@ public class FlowHelper {
         if (renderable.getDirection() != direction) {
             renderable.setDirection(direction);
         }
-        Log.e(TAG, "第" + renderable.getNum() + "个气泡的方向是" + Integer.toBinaryString(direction));
         if ((direction & N) != 0) {
             renderable.getLayoutBoundary().offset(0, -STEP);
         } else if ((direction & S) != 0) {
@@ -152,7 +151,7 @@ public class FlowHelper {
         float translationY = renderable.getTranslationY();
         float x = renderable.getX();
         float y = renderable.getY();
-        Rect rect = renderable.getBoundary();
+        RectF rect = renderable.getBoundary();
         if (rect == null) {
             return;
         }

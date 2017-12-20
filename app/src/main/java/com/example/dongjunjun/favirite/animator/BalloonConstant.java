@@ -15,8 +15,9 @@ public class BalloonConstant {
     public static int HORIZONTAL_MARGIN = 30;//初始气泡的左右间隔
 
     //气泡浮动相关
-    public static int STEP = 1;//每次浮动气泡的位移
-    public static int FLOW_MAX = 60;//气泡浮动边界限定
+    public static float STEP = 1f;//每次浮动气泡的位移
+    public static int FLOW_MAX = 10;//气泡浮动边界限定
+    public static int FLOW_DELAY = 60;//两次浮动之间的时间间隔
 
     //显示个数相关
     public static final int BALLOON_CAPACITY = 10;//气泡的初始容量

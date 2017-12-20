@@ -130,10 +130,10 @@ public class Balloon extends Renderable {
 
     @Override
     public int checkedLimitDirection() {
-        int l = layoutBoundary.left;
-        int t = layoutBoundary.top;
-        int r = layoutBoundary.right;
-        int b = layoutBoundary.bottom;
+        float l = layoutBoundary.left;
+        float t = layoutBoundary.top;
+        float r = layoutBoundary.right;
+        float b = layoutBoundary.bottom;
         if (l<boundary.left){
             if (t<boundary.top){
                 return WN;
