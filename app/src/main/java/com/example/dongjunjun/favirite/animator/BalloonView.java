@@ -6,9 +6,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.FrameLayout;
+
+import com.example.dongjunjun.favirite.animator.event.FlowEvent;
+import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
+
+import org.greenrobot.eventbus.EventBus;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
@@ -24,8 +33,10 @@ public class BalloonView extends FrameLayout {
 
     private Balloon mBalloon;
     private MajorTag mMajorTag;
-
     private SparseArray<SubTagView> mSubTags;
+
+    GestureDetectorCompat mGestureCompat;
+    BalloonItemClickListener mItemClickListener;
 
     public BalloonView(@NonNull Context context) {
         super(context);
@@ -41,6 +52,12 @@ public class BalloonView extends FrameLayout {
         setWillNotDraw(false);
         initBalloon();
         initTags();
+        mGestureCompat = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
     }
 
     private void initBalloon() {
@@ -52,6 +69,10 @@ public class BalloonView extends FrameLayout {
         mSubTags = new SparseArray<>(TAG_CAPACITY);
     }
 
+    public void setItemClickListener(BalloonItemClickListener itemClickListener) {
+        this.mItemClickListener = itemClickListener;
+    }
+
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
@@ -59,6 +80,22 @@ public class BalloonView extends FrameLayout {
 
     public void setText(String text) {
         mMajorTag.setText(text);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mGestureCompat.onTouchEvent(event)) {
+            float x = event.getX();
+            float y = event.getY();
+            if (mBalloon.isCircle(x, y)) {
+                EventBus.getDefault().post(new FlowEvent(true));
+                if (mItemClickListener != null) {
+                    mItemClickListener.onItemClick(mMajorTag, mBalloon.getNum(), -1);
+                }
+                return true;
+            }
+        }
+        return super.onTouchEvent(event);
     }
 
     @Override

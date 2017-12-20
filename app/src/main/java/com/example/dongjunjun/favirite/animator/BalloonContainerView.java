@@ -11,6 +11,11 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import com.example.dongjunjun.favirite.R;
+import com.example.dongjunjun.favirite.animator.event.FlowEvent;
+import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
+
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +44,7 @@ public class BalloonContainerView extends FrameLayout {
     private List<BalloonView> mBalloons = new ArrayList<>(BALLOON_CAPACITY);
     private BalloonViewLifeCallBack mBalloonCallBack;
     private BalloonHandlerThread mHandlerThread;
+    private BalloonItemClickListener mItemCLickListener;
 
     private int rawHeight;//一行的高度
 
@@ -60,9 +66,8 @@ public class BalloonContainerView extends FrameLayout {
         mHandlerThread = new BalloonHandlerThread(this, TAG);
     }
 
-    @Override
-    public void bringToFront() {
-        super.bringToFront();
+    public void setBalloonItemClickListener(BalloonItemClickListener clickListener) {
+        this.mItemCLickListener = clickListener;
     }
 
     private void initAttrs(AttributeSet attrs) {
@@ -288,11 +293,22 @@ public class BalloonContainerView extends FrameLayout {
         removeCallbacks(flowRunnable);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onFlowEvent(FlowEvent event){
+        if (event!=null&&event.cancel){
+            stopFlow();
+        }else {
+            if (mHandlerThread!=null){
+                mHandlerThread.sendFlowRequest();
+            }
+        }
+    }
+
     class FlowRunnable implements Runnable {
 
         @Override
         public void run() {
-            for (BalloonView balloonView:mBalloons){
+            for (BalloonView balloonView : mBalloons) {
                 balloonView.postInvalidate();
             }
         }
@@ -327,14 +343,16 @@ public class BalloonContainerView extends FrameLayout {
         }
 
         public void sendFlowRequest() {
-            if (mFlowHandler.hasMessages(FLOW)) {
+            if (mFlowHandler == null || mFlowHandler.hasMessages(FLOW)) {
                 return;
             }
             mFlowHandler.sendEmptyMessageDelayed(FLOW, FLOW_DELAY);
         }
 
         public void stopFlow() {
-            mFlowHandler.removeMessages(FLOW);
+            if (mFlowHandler != null) {
+                mFlowHandler.removeMessages(FLOW);
+            }
         }
     }
 }

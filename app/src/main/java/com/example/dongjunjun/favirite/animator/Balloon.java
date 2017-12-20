@@ -107,6 +107,17 @@ public class Balloon extends Renderable {
         canvas.restore();
     }
 
+    public boolean isCircle(float dx, float dy) {
+        float l = x + translationX - radius;
+        float t = y + translationY - radius;
+        float r = x + translationX + radius;
+        float b = y + translationY + radius;
+        if (dx>=l&&dx<=r&&dy>=t&&dy<=b){
+            return true;
+        }
+        return false;
+    }
+
     private void setState(@State int state) {
         this.state = state;
     }
@@ -120,7 +131,7 @@ public class Balloon extends Renderable {
      */
     @Override
     protected void update(Renderable... fix) {
-        FlowHelper.updateFlow(this,fix);
+        FlowHelper.updateFlow(this, fix);
     }
 
     @Override
@@ -129,10 +140,10 @@ public class Balloon extends Renderable {
         float t = 0;
         float r = layoutBoundary.width();
         float b = layoutBoundary.height();
-        int sl = (int) (x + translationX - radius + 0.5);
-        int st = (int) (y + translationY - radius + 0.5);
-        int sr = (int) (x + translationX + radius + 0.5);
-        int sb = (int) (y + translationY + radius + 0.5);
+        float sl = x + translationX - radius;
+        float st = y + translationY - radius;
+        float sr = x + translationX + radius;
+        float sb = y + translationY + radius;
         if (sl < l) {
             if (st < t) {
                 return WN;
