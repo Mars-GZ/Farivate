@@ -50,6 +50,7 @@ public class BalloonView extends FrameLayout {
 
     private void init() {
         setWillNotDraw(false);
+        setClickable(true);
         initBalloon();
         initTags();
         mGestureCompat = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {

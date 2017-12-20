@@ -14,6 +14,7 @@ import com.example.dongjunjun.favirite.R;
 import com.example.dongjunjun.favirite.animator.event.FlowEvent;
 import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
@@ -147,6 +148,7 @@ public class BalloonContainerView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        EventBus.getDefault().register(this);
     }
 
     private void startThread() {
@@ -287,6 +289,7 @@ public class BalloonContainerView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        EventBus.getDefault().unregister(this);
         if (mHandlerThread != null) {
             mHandlerThread.quit();
         }
