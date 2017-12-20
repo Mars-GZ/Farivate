@@ -64,42 +64,62 @@ public class BalloonConstant {
     /**
      * 点击后第i个气泡的位置
      *
-     * @param rawCount 总行数
      * @param i
      * @return
      */
-    public static int getSmallPosition(int rawCount, int i) {
+    public static int getSmallPosition(int i) {
         int raw = getRaw(i);
         int column = getColumn(i);
         int pos = -1;
+        int target_column = (LINE_COUNT - 1) >> 1;//从0开始
+        int target_column_v = target_column + 1;//从1开始
         if ((raw & 1) == 0) {
             //偶数行
-            int target_column = (LINE_COUNT + 1) >> 1;
             if ((LINE_COUNT & 1) == 0) {
                 //一行为偶数个
-                if (column < target_column) {
-                    pos = target_column * raw + column;
+                if (column <= target_column) {
+                    pos = target_column_v * raw + column;
                 } else {
-                    pos = LINES * target_column + raw * target_column + (column - target_column);
+                    pos = LINES * target_column_v + raw * target_column_v + (column - target_column_v);
                 }
             } else {
                 //一行为奇数个
-                if (column < target_column) {
-                    pos = target_column * raw + column;
+                int o = (raw + 1) >> 1;//前面偶数行的个数
+                int e = raw - o;//前面奇数行的个数
+                if (column <= target_column) {
+                    pos = target_column_v * o + (target_column_v - 1) * e + column;
                 } else if (column > target_column) {
-
-                } else {
-
+                    o = (LINES + 1) >> 1;
+                    e = LINES - o;
+                    pos = target_column_v * o + (target_column_v - 1) * e;
+                    o = (raw + 1) >> 1;
+                    e = raw - o;
+                    pos += e * target_column_v + o * (target_column_v - 1) + (column - target_column_v);
                 }
             }
         } else {
             //奇数行
             if ((LINE_COUNT & 1) == 0) {
                 //一行为偶数个
-
+                if (column <= target_column) {
+                    pos = target_column_v * raw + column;
+                } else {
+                    pos = LINES * target_column_v + raw * target_column_v + (column - target_column_v);
+                }
             } else {
                 //一行为奇数个
-
+                int o = (raw + 1) >> 1;//前面偶数行的个数
+                int e = raw - o;//前面奇数行的个数
+                if (column < target_column) {
+                    pos = target_column_v * o + (target_column_v - 1) * e + column;
+                } else if (column >= target_column) {
+                    o = (LINES + 1) >> 1;
+                    e = LINES - o;
+                    pos = target_column_v * o + (target_column_v - 1) * e;
+                    o = (raw + 1) >> 1;
+                    e = raw - o;
+                    pos += e * target_column_v + o * (target_column_v - 1) + (column - target_column);
+                }
             }
         }
         return pos;

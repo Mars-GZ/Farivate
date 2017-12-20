@@ -216,7 +216,7 @@ public class BalloonContainerView extends FrameLayout {
 
     private int getRawCount() {
         int count = mBalloons.size();
-        int lines = count == 0 ? 0 : BalloonConstant.getRaw(count) + 1;
+        int lines = count == 0 ? 0 : BalloonConstant.getRaw(count);
         BalloonConstant.setLines(lines);
         return lines;
     }
