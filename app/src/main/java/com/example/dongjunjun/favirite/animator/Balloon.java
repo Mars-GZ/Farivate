@@ -8,6 +8,9 @@ import android.support.annotation.IntDef;
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
 import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND_TO_SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;

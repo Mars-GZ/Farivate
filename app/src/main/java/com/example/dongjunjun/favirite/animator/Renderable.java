@@ -7,6 +7,9 @@ import android.graphics.RectF;
 
 import com.example.dongjunjun.favirite.animator.helper.Direction;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
 
 /**
@@ -24,17 +27,47 @@ public abstract class Renderable {
     private @Direction
     int direction = Direction.RED_CENTER;//浮动方向
 
-    protected boolean isSelected = true;//被选中的状态
+    protected boolean isSelected = ((int)(Math.random()*2))==0;//被选中的状态
 
     protected RectF layoutBoundary = new RectF();//view的布局边界,相对于view的父布局
     protected RectF normalRebound = new RectF();//view的初始布局边界
+
+    protected Renderable parent;//父Renderable
+    protected List<Renderable> children;
 
     public Renderable(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
-    public RectF getNormalRebound(){
+    public List<Renderable> getChildren() {
+        return children;
+    }
+
+    public void addChild(Tag tag) {
+        if (children == null) {
+            children = new ArrayList<>();
+        }
+        if (!children.contains(tag)) {
+            children.add(tag);
+        }
+    }
+
+    public void removeChildren() {
+        if (children != null) {
+            children.clear();
+        }
+    }
+
+    public Renderable getParent() {
+        return parent;
+    }
+
+    public void setParent(Renderable parent) {
+        this.parent = parent;
+    }
+
+    public RectF getNormalRebound() {
         return normalRebound;
     }
 
@@ -102,8 +135,8 @@ public abstract class Renderable {
         this.translationX = translationX;
     }
 
-    public void addTranslationX(float dx){
-        this.translationX+=dx;
+    public void addTranslationX(float dx) {
+        this.translationX += dx;
     }
 
     public float getTranslationX() {
@@ -114,8 +147,8 @@ public abstract class Renderable {
         this.translationY = translationY;
     }
 
-    public void addTranslationY(float dy){
-        this.translationY+=dy;
+    public void addTranslationY(float dy) {
+        this.translationY += dy;
     }
 
     public float getTranslationY() {

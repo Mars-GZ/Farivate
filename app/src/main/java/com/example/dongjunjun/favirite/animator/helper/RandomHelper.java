@@ -8,7 +8,11 @@ import android.graphics.Shader;
 import com.example.dongjunjun.favirite.animator.Balloon;
 import com.example.dongjunjun.favirite.animator.BalloonConstant;
 import com.example.dongjunjun.favirite.animator.Renderable;
+import com.example.dongjunjun.favirite.animator.Tag;
 
+import java.util.List;
+
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_TEXT_SIZE;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.ES;
@@ -26,10 +30,15 @@ import static com.example.dongjunjun.favirite.animator.helper.Direction.WS;
 
 public class RandomHelper {
 
+    //气泡浮动方向
     static final int[] directions = new int[]{N, S, E, W, WN, WS, EN, ES};
 
-    public static final int[][] color = new int[][]{{0xffffdb00, 0xffffa400}, {0xff00daae, 0xff1ddb1a},
+    //气泡颜色
+    static final int[][] color = new int[][]{{0xffffdb00, 0xffffa400}, {0xff00daae, 0xff1ddb1a},
             {0xff54c4ff, 0xff3d73ff}, {0xffffaa5a, 0xffff566f}};
+
+    //文字颜色
+    static final int[] text_color = new int[]{0xffffcb15, 0xff04da00, 0xff2faefe, 0xffff4e56};
 
     /**
      * 获取本次浮动方向
@@ -101,28 +110,54 @@ public class RandomHelper {
      * @return
      */
     public static void setBalloonColor(Balloon balloon) {
-        if (balloon==null){
+        if (balloon == null) {
             return;
         }
         boolean isSelected = balloon.isSelected();
         Paint paint = balloon.getPaint();
+        int num = balloon.getNum();
+        int raw = BalloonConstant.getRaw(num) & 1;
+        int column = BalloonConstant.getColumn(num) & 1;
+        int pos = 0;
+        if (raw == 1) {
+            pos++;
+        }
+        pos += raw + column;
         if (isSelected) {
-            int num = balloon.getNum();
-            int raw = BalloonConstant.getRaw(num)&1;
-            int column = BalloonConstant.getColumn(num)&1;
-            int pos = 0;
-            if (raw==1){
-                pos++;
-            }
-            pos+=raw+column;
             float x = balloon.getX();
             float y = balloon.getY();
             float r = balloon.getRadius();
-            LinearGradient gradient = new LinearGradient(x-r,y-r,x+r,y+r,
-                    color[pos],null, Shader.TileMode.MIRROR);
+            LinearGradient gradient = new LinearGradient(x - r, y - r, x + r, y + r,
+                    color[pos], null, Shader.TileMode.MIRROR);
             paint.setShader(gradient);
-        }else {
+        } else {
             paint.setColor(Color.WHITE);
+        }
+        List<Renderable> children = balloon.getChildren();
+        if (children == null) {
+            return;
+        }
+        for (Renderable child : children) {
+            if (child instanceof Tag) {
+                Tag tag = (Tag) child;
+                if (tag == null) {
+                    continue;
+                }
+                Paint tagPaint;
+                if (tag.getPaint() == null) {
+                    tagPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+                } else {
+                    tagPaint = tag.getPaint();
+                }
+                tagPaint.setTextSize(TAG_TEXT_SIZE);
+                tagPaint.setTextAlign(Paint.Align.CENTER);
+                if (isSelected) {
+                    tagPaint.setColor(Color.WHITE);
+                } else {
+                    tagPaint.setColor(text_color[pos]);
+                }
+                tag.setPaint(tagPaint);
+            }
         }
     }
 }

@@ -49,7 +49,6 @@ public class BalloonView extends FrameLayout {
 
     GestureDetectorCompat mGestureCompat;
     BalloonItemClickListener mItemClickListener;
-    ValueAnimator animator;
 
     public BalloonView(@NonNull Context context) {
         super(context);
@@ -81,6 +80,7 @@ public class BalloonView extends FrameLayout {
     private void initTags() {
         mMajorTag = new MajorTag(0, 0);
         mMajorTag.setParent(mBalloon);
+        mBalloon.addChild(mMajorTag);
         mSubTags = new SparseArray<>(TAG_CAPACITY);
     }
 
@@ -155,18 +155,15 @@ public class BalloonView extends FrameLayout {
             //奇数列
             mBalloon.setY(mBalloon.getRadius());
         }
-        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.WHITE);
-        mBalloon.setPaint(paint);
-
         //init Tag
         mMajorTag.setX(mBalloon.getX());
-        paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setTextSize(TAG_TEXT_SIZE);
-        paint.setTextAlign(Paint.Align.CENTER);
-        Paint.FontMetrics metrics = paint.getFontMetrics();
-        mMajorTag.setBaseLine((int) ((height + (mBalloon.getY() - height / 2) - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
-        mMajorTag.setPaint(paint);
+
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        mBalloon.setPaint(paint);
+        if (mMajorTag.getPaint() != null) {
+            Paint.FontMetrics metrics = mMajorTag.getPaint().getFontMetrics();
+            mMajorTag.setBaseLine((int) ((height + (mBalloon.getY() - height / 2) - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
+        }
     }
 
     @Override
@@ -184,6 +181,7 @@ public class BalloonView extends FrameLayout {
         }
     }
 
+    ValueAnimator animator;
     float targetX, targetY, targetR;
 
     public Animator getAnimator() {

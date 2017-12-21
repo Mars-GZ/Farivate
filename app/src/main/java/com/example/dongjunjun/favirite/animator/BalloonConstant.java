@@ -29,7 +29,7 @@ public class BalloonConstant {
     //显示个数相关
     public static final int BALLOON_CAPACITY = 10;//气泡的初始容量
     public static final int TAG_CAPACITY = 6;//标签的初始容量
-    public static final int LINE_COUNT = 3;//每行气泡的个数
+    public static final int LINE_COUNT = 4;//每行气泡的个数
     //标签大小相关
     public static final int TAG_TEXT_SIZE = 30;
     //气泡动画相关

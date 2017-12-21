@@ -12,8 +12,6 @@ public class Tag extends Renderable {
     private String text;
     private float baseLine;
 
-    private Renderable parent;//Tag所依靠的Renderable
-
     public Tag(float x, float y) {
         super(x, y);
     }
@@ -24,10 +22,6 @@ public class Tag extends Renderable {
 
     public String getText() {
         return text;
-    }
-
-    public void setParent(Renderable parent){
-        this.parent = parent;
     }
 
     @Override
