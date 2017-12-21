@@ -6,11 +6,13 @@ import android.support.annotation.IntDef;
 
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
 
+import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND_TO_SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_EXPAND;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_SMALL;
+import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL_TO_EXPAND;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
@@ -31,17 +33,10 @@ public class Balloon extends Renderable {
 
     private float radius;
     private float scale = 1f;
-
-    private Balloon left;
-    private Balloon top;
-    private Balloon right;
-    private Balloon bottom;
-
     private int state = NONE;
-
     int position;//位置,和编号不一样
-
-    private ValueAnimator animator;
+    int smallPos;//变小后的排列位置
+    private BalloonMeasure measure;
 
     public Balloon(float radius, float x, float y) {
         super(x, y);
@@ -55,26 +50,41 @@ public class Balloon extends Renderable {
         }
     }
 
-    public ValueAnimator getAnimator() {
-        initAnimator();
-        return animator;
+    public BalloonMeasure getMeasure() {
+        return measure;
     }
 
-    private void initAnimator() {
-        switch (state){
-            case NORMAL_TO_EXPAND:
+    public void setMeasure(BalloonMeasure measure) {
+        this.measure = measure;
+    }
 
-                break;
-            case NORMAL_TO_SMALL:
+    /**
+     * 切割布局矩形，使其与圆贴边
+     */
+    public void cutLayoutRect() {
+        float dx = x + translationX - radius;
+        float dy = y + translationY - radius;
+        layoutBoundary.offset(dx, dy);
+        layoutBoundary.intersect(layoutBoundary.left, layoutBoundary.top, layoutBoundary.left + 2 * radius, layoutBoundary.top + 2 * radius);
+        normalRebound.set(layoutBoundary);
+    }
 
-                break;
-            case EXPAND_TO_SMALL:
+    public void match() {
+        x = layoutBoundary.width() / 2;
+        y = layoutBoundary.height() / 2;
+    }
 
-                break;
-            case SMALL_TO_EXPAND:
+    public void reset() {
+        translationY = translationX = 0;
+        scale = 1f;
+    }
 
-                break;
-        }
+    public int getSmallPosition() {
+        return smallPos;
+    }
+
+    public void setSmallPosition(int smallPos) {
+        this.smallPos = smallPos;
     }
 
     public int getPosition() {
@@ -83,38 +93,6 @@ public class Balloon extends Renderable {
 
     public void setPosition(int position) {
         this.position = position;
-    }
-
-    public Balloon getLeft() {
-        return left;
-    }
-
-    public void setLeft(Balloon left) {
-        this.left = left;
-    }
-
-    public Balloon getTop() {
-        return top;
-    }
-
-    public void setTop(Balloon top) {
-        this.top = top;
-    }
-
-    public Balloon getRight() {
-        return right;
-    }
-
-    public void setRight(Balloon right) {
-        this.right = right;
-    }
-
-    public Balloon getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(Balloon bottom) {
-        this.bottom = bottom;
     }
 
     public void setScale(float scale) {
@@ -206,7 +184,7 @@ public class Balloon extends Renderable {
         return RED_CENTER;
     }
 
-    @IntDef({NONE, NORMAL, NORMAL_TO_EXPAND, NORMAL_TO_SMALL, SMALL_TO_EXPAND, EXPAND_TO_SMALL})
+    @IntDef({NONE, NORMAL, NORMAL_TO_EXPAND, NORMAL_TO_SMALL, SMALL_TO_EXPAND, EXPAND_TO_SMALL, SMALL, EXPAND})
     @interface State {
         int NONE = -1;//初始时无值，需要主动去赋值
         int NORMAL = 0;
@@ -214,5 +192,7 @@ public class Balloon extends Renderable {
         int NORMAL_TO_SMALL = 2;
         int SMALL_TO_EXPAND = 3;
         int EXPAND_TO_SMALL = 4;
+        int SMALL = 5;
+        int EXPAND = 6;
     }
 }

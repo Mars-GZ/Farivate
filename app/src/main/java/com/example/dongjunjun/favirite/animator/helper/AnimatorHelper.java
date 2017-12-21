@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.view.animation.LinearInterpolator;
 
-import com.example.dongjunjun.favirite.animator.Balloon;
 import com.example.dongjunjun.favirite.animator.BalloonView;
 
 import java.util.List;
@@ -26,16 +25,16 @@ public class AnimatorHelper {
         return AnimatorHelperHolder.animatorHelper;
     }
 
-    public boolean canPlayAnimator(){
-        return animatorSet!=null&&!(animatorSet.isStarted()||animatorSet.isRunning());
+    public boolean canPlayAnimator() {
+        return animatorSet == null || (animatorSet != null && !(animatorSet.isStarted() || animatorSet.isRunning()));
     }
 
-    public void balloonsPlayTogether(Balloon... balloons) {
+    public void balloonsPlayTogether(BalloonView... balloons) {
         if (balloons == null) {
             return;
         }
         animatorSet = new AnimatorSet();
-        for (Balloon balloon : balloons) {
+        for (BalloonView balloon : balloons) {
             if (balloon != null) {
                 Animator animator = balloon.getAnimator();
                 if (animator != null) {
@@ -57,7 +56,7 @@ public class AnimatorHelper {
             if (balloonView == null || balloonView.getModel() == null) {
                 return;
             }
-            Animator animator = balloonView.getModel().getAnimator();
+            Animator animator = balloonView.getAnimator();
             if (animator != null) {
                 animatorSet.playTogether(animator);
             }
@@ -68,7 +67,9 @@ public class AnimatorHelper {
     }
 
     public void cancelAllAnimator() {
-        animatorSet.cancel();
+        if (animatorSet != null && (animatorSet.isRunning() || animatorSet.isStarted())) {
+            animatorSet.cancel();
+        }
     }
 
     private static class AnimatorHelperHolder {

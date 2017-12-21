@@ -50,6 +50,7 @@ public class BalloonContainerView extends FrameLayout {
     private BalloonHandlerThread mHandlerThread;
     private BalloonItemClickListener mItemCLickListener;
     private BalloonView mSelectBalloonView;
+    private BalloonMeasure mBalloonMeasure;//存放一些测量数据
 
     private int rawHeight;//一行的高度
 
@@ -69,6 +70,7 @@ public class BalloonContainerView extends FrameLayout {
     private void initData() {
         mBalloonCallBack = new BalloonViewLifeCallBack();
         mHandlerThread = new BalloonHandlerThread(this, TAG);
+        mBalloonMeasure = new BalloonMeasure();
     }
 
     public void setBalloonItemClickListener(BalloonItemClickListener clickListener) {
@@ -92,6 +94,7 @@ public class BalloonContainerView extends FrameLayout {
 
     public void setRawHeight(int rawHeight) {
         this.rawHeight = rawHeight;
+        mBalloonMeasure.setRawHeight(rawHeight);
     }
 
     public void addBalloon(String text) {
@@ -113,6 +116,7 @@ public class BalloonContainerView extends FrameLayout {
             balloonView.setItemClickListener(mItemCLickListener);
             balloonView.getModel().setNum(i);
             balloonView.getModel().setPosition(i);
+            balloonView.getModel().setMeasure(mBalloonMeasure);
             mBalloons.add(balloonView);
             addView(balloonView);
         }
@@ -158,6 +162,9 @@ public class BalloonContainerView extends FrameLayout {
         for (BalloonView balloonView : mBalloons) {
             balloonView.getModel().setState(NONE);
         }
+        mBalloonMeasure.setCounts(mBalloons.size());
+        mBalloonMeasure.setLines(getRawCount());
+        mBalloonMeasure.calculateMargin();
     }
 
     private void startThread() {
@@ -211,13 +218,15 @@ public class BalloonContainerView extends FrameLayout {
                 }
             }
         }
-        setMeasuredDimension(widthSize, getRawCount() * rawHeight);
+        int height = getRawCount() * rawHeight;
+        mBalloonMeasure.setWidth(widthSize);
+        mBalloonMeasure.setHeight(height);
+        setMeasuredDimension(widthSize, height);
     }
 
     private int getRawCount() {
         int count = mBalloons.size();
-        int lines = count == 0 ? 0 : BalloonConstant.getRaw(count);
-        BalloonConstant.setLines(lines);
+        int lines = count == 0 ? 0 : BalloonConstant.getRaw(count - 1) + 1;
         return lines;
     }
 
@@ -331,7 +340,7 @@ public class BalloonContainerView extends FrameLayout {
                 Balloon normalBalloon = balloonView.getModel();
                 selectBalloon.setState(Balloon.State.EXPAND_TO_SMALL);
                 normalBalloon.setState(Balloon.State.SMALL_TO_EXPAND);
-                AnimatorHelper.getInstance().balloonsPlayTogether(selectBalloon, normalBalloon);
+                AnimatorHelper.getInstance().balloonsPlayTogether(mSelectBalloonView, balloonView);
             } else {
                 Balloon normalBalloon = balloonView.getModel();
                 normalBalloon.setState(Balloon.State.NORMAL_TO_EXPAND);

@@ -12,6 +12,8 @@ public class Tag extends Renderable {
     private String text;
     private float baseLine;
 
+    private Renderable parent;//Tag所依靠的Renderable
+
     public Tag(float x, float y) {
         super(x, y);
     }
@@ -22,6 +24,10 @@ public class Tag extends Renderable {
 
     public String getText() {
         return text;
+    }
+
+    public void setParent(Renderable parent){
+        this.parent = parent;
     }
 
     @Override
@@ -41,4 +47,13 @@ public class Tag extends Renderable {
         canvas.restore();
     }
 
+    public void match(int height){
+        Paint.FontMetrics metrics = paint.getFontMetrics();
+        setBaseLine((int) ((height - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
+        setX(parent.getX());
+    }
+
+    public void reset(){
+        translationX = translationY = 0;
+    }
 }

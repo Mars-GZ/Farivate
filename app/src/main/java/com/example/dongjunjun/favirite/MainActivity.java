@@ -26,9 +26,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 mBalloonContainer.startFlow();
-                for (int i = 0; i < 6; i++) {
-                    Log.e("MainActivity", BalloonConstant.getSmallPosition(i) + "");
-                }
             }
         });
     }

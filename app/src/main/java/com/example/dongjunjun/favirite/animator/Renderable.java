@@ -33,6 +33,10 @@ public abstract class Renderable {
         this.y = y;
     }
 
+    public RectF getNormalRebound(){
+        return normalRebound;
+    }
+
     public int getNum() {
         return num;
     }
