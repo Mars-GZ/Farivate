@@ -33,7 +33,8 @@ public class BalloonConstant {
     //标签大小相关
     public static final int TAG_TEXT_SIZE = 42;
     //气泡动画相关
-    public static final long BALLOON_SELECT_DURATION = 500;
+    public static final long BALLOON_SELECT_DURATION = 800;
+    public static final long BALLOON_EXCHANGE_DELAY = 300;
 
     /**
      * 获取所在行数
@@ -55,4 +56,31 @@ public class BalloonConstant {
         return i % LINE_COUNT;
     }
 
+    /**
+     * 扩展透明度函数关系式
+     * <p>
+     * x=0.8,y=255
+     * x=1,y=0
+     * y=-1275x+1275
+     *
+     * @param value
+     * @return
+     */
+    public static int getExpandAlpha(float value) {
+        return (int) (-1275 * value + 1275);
+    }
+
+    /**
+     * 缩小透明度函数关系式
+     * <p>
+     * x=0,y=0
+     * x=0.2,y=255
+     * y=6375x^2
+     *
+     * @param value
+     * @return
+     */
+    public static int getSmallAlpha(float value) {
+        return (int) (6375 * value*value);
+    }
 }

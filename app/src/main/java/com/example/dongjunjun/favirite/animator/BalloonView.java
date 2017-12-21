@@ -12,9 +12,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.FrameLayout;
 
 import com.example.dongjunjun.favirite.animator.event.FlowEvent;
@@ -80,6 +82,7 @@ public class BalloonView extends FrameLayout {
     private void initTags() {
         mMajorTag = new MajorTag(0, 0);
         mMajorTag.setParent(mBalloon);
+        mMajorTag.setSelected(mBalloon.isSelected());
         mBalloon.addChild(mMajorTag);
         mSubTags = new SparseArray<>(TAG_CAPACITY);
     }
@@ -160,15 +163,17 @@ public class BalloonView extends FrameLayout {
 
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mBalloon.setPaint(paint);
+        RandomHelper.setBalloonColor(mBalloon);
+        RandomHelper.setTextColor(mBalloon);
         if (mMajorTag.getPaint() != null) {
             Paint.FontMetrics metrics = mMajorTag.getPaint().getFontMetrics();
-            mMajorTag.setBaseLine((int) ((height + (mBalloon.getY() - height / 2) - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
+            mMajorTag.setBaseLine((mBalloon.getY() * 2 - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2);
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        mBalloon.draw(canvas);
+        mBalloon.draw(canvas,BalloonMeasure.backPaint);
         mMajorTag.draw(canvas);
     }
 
@@ -198,7 +203,7 @@ public class BalloonView extends FrameLayout {
      */
     private void initAnimator() {
         int state = mBalloon.getState();
-        BalloonMeasure measure = mBalloon.getMeasure();
+        final BalloonMeasure measure = mBalloon.getMeasure();
         switch (state) {
             case NORMAL_TO_SMALL:
                 mBalloon.setSmallPosition(measure.getSmallPosition(mBalloon.getNum()));
@@ -244,12 +249,31 @@ public class BalloonView extends FrameLayout {
                 mBalloon.setRadius(layoutBoundary.width() / 2);
                 mBalloon.match();
                 mMajorTag.match((int) layoutBoundary.height());
+                RandomHelper.setBalloonColor(mBalloon);
                 if (state == NORMAL_TO_EXPAND || state == SMALL_TO_EXPAND) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * value);
+                    if (value >= 0.8) {
+                        if (mMajorTag.isSelected()) {
+                            mMajorTag.setSelected(false);
+                            RandomHelper.setTextColor(mBalloon);
+                        }
+                        mBalloon.setAlpha(BalloonConstant.getExpandAlpha(value));
+                    }
                 } else if (state == EXPAND_TO_SMALL) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * (1 - value));
+                    if (!mBalloon.isSelected()) {
+                        mBalloon.setSelected(true);
+                        RandomHelper.setBalloonColor(mBalloon);
+                    }
+                    if (value > 0.2) {
+                        if (!mMajorTag.isSelected()) {
+                            mMajorTag.setSelected(true);
+                            RandomHelper.setTextColor(mBalloon);
+                        }
+                    }else {
+                        mBalloon.setAlpha(BalloonConstant.getSmallAlpha(value));
+                    }
                 }
-                RandomHelper.setBalloonColor(mBalloon);
                 requestLayout();
                 invalidate();
             }
@@ -269,6 +293,10 @@ public class BalloonView extends FrameLayout {
                     case NORMAL_TO_EXPAND:
                     case SMALL_TO_EXPAND:
                         mBalloon.setState(EXPAND);
+                        if (mBalloon.isSelected()) {
+                            mBalloon.setSelected(false);
+                            RandomHelper.setBalloonColor(mBalloon);
+                        }
                         break;
                 }
             }
@@ -278,6 +306,9 @@ public class BalloonView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        if (mBalloon.isCurSelected()) {
+            mBalloon.setSelected(true);
+        }
     }
 
     public void releaseResources() {

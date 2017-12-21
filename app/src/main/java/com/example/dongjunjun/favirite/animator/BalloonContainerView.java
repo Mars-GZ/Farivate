@@ -167,9 +167,10 @@ public class BalloonContainerView extends FrameLayout {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        BalloonMeasure.initPaint();
         EventBus.getDefault().register(this);
         for (BalloonView balloonView : mBalloons) {
-            Balloon balloon =  balloonView.getModel();
+            Balloon balloon = balloonView.getModel();
             balloon.setPosition(balloon.getNum());
             balloon.setState(NONE);
         }
@@ -320,6 +321,7 @@ public class BalloonContainerView extends FrameLayout {
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
+        BalloonMeasure.releasePaint();
         EventBus.getDefault().unregister(this);
         if (mHandlerThread != null) {
             mHandlerThread.quit();
@@ -350,11 +352,15 @@ public class BalloonContainerView extends FrameLayout {
                 Balloon selectBalloon = mSelectBalloonView.getModel();
                 Balloon normalBalloon = balloonView.getModel();
                 selectBalloon.setState(Balloon.State.EXPAND_TO_SMALL);
+                selectBalloon.setCurSelected(false);
                 normalBalloon.setState(Balloon.State.SMALL_TO_EXPAND);
-                AnimatorHelper.getInstance().balloonsPlayTogether(mSelectBalloonView, balloonView);
+                normalBalloon.setCurSelected(true);
+                AnimatorHelper.getInstance().balloonsPlayTogether(balloonView);
+                AnimatorHelper.getInstance().playExchangeAniamtor(mSelectBalloonView);
             } else {
                 Balloon normalBalloon = balloonView.getModel();
                 normalBalloon.setState(Balloon.State.NORMAL_TO_EXPAND);
+                normalBalloon.setCurSelected(true);
                 for (BalloonView balloonView1 : mBalloons) {
                     if (balloonView1 != balloonView) {
                         balloonView1.getModel().setState(Balloon.State.NORMAL_TO_SMALL);

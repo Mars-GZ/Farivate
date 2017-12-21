@@ -21,13 +21,15 @@ public abstract class Renderable {
     protected float x, y;
     protected float translationX, translationY;
     protected Paint paint;
+    protected int alpha;
     private int num = -1;//控件编号
 
     protected int priority;//根据优先度来显示
     private @Direction
     int direction = Direction.RED_CENTER;//浮动方向
 
-    protected boolean isSelected = ((int)(Math.random()*2))==0;//被选中的状态
+    protected boolean isSelected = ((int)(Math.random()*2))==0;//被选中过的状态
+    protected boolean isCurSelect = false;//当前被选中的状态,当前被选中时isSelected为false
 
     protected RectF layoutBoundary = new RectF();//view的布局边界,相对于view的父布局
     protected RectF normalRebound = new RectF();//view的初始布局边界
@@ -99,6 +101,14 @@ public abstract class Renderable {
         this.layoutBoundary.set(l, t, r, b);
     }
 
+    public boolean isCurSelected() {
+        return isCurSelect;
+    }
+
+    public void setCurSelected(boolean curSelect) {
+        isCurSelect = curSelect;
+    }
+
     public boolean isSelected() {
         return isSelected;
     }
@@ -113,6 +123,16 @@ public abstract class Renderable {
 
     public Paint getPaint() {
         return paint;
+    }
+
+    public void setAlpha(int alpha){
+        if (paint!=null){
+            paint.setAlpha(alpha);
+        }
+    }
+
+    public int getAlpha(){
+        return paint==null?0:paint.getAlpha();
     }
 
     public void setX(float x) {

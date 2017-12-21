@@ -1,5 +1,8 @@
 package com.example.dongjunjun.favirite.animator;
 
+import android.graphics.Color;
+import android.graphics.Paint;
+
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BIG_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BOTTOM_MARGIN;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.LINE_COUNT;
@@ -23,6 +26,17 @@ public class BalloonMeasure {
     private int big_radius;//大气泡的大小
     private int top_margin;
     private int bottom_margin;
+
+    public static Paint backPaint;
+
+    public static void initPaint(){
+        backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        backPaint.setColor(Color.WHITE);
+    }
+
+    public static void releasePaint(){
+        backPaint = null;
+    }
 
     public void setWidth(int width) {
         this.width = width;

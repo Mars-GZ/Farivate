@@ -125,6 +125,7 @@ public class RandomHelper {
             paint.setShader(gradient);
         } else {
             paint.setColor(Color.WHITE);
+            paint.setShader(null);
         }
     }
 
@@ -155,12 +156,12 @@ public class RandomHelper {
         }
         int pos = getColorPosition(balloon);
         List<Renderable> children = balloon.getChildren();
-        boolean isSelected = balloon.isSelected();
         if (children == null) {
             return;
         }
         for (Renderable child : children) {
             if (child instanceof Tag) {
+                boolean isSelected = child.isSelected();
                 Tag tag = (Tag) child;
                 if (tag == null) {
                     continue;

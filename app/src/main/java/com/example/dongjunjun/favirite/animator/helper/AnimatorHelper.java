@@ -4,10 +4,12 @@ import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.view.animation.LinearInterpolator;
 
+import com.example.dongjunjun.favirite.animator.Balloon;
 import com.example.dongjunjun.favirite.animator.BalloonView;
 
 import java.util.List;
 
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_EXCHANGE_DELAY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_SELECT_DURATION;
 
 /**
@@ -17,6 +19,7 @@ import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_S
 public class AnimatorHelper {
 
     private AnimatorSet animatorSet;
+    private Animator exchangeAnimator;
 
     private AnimatorHelper() {
     }
@@ -66,10 +69,30 @@ public class AnimatorHelper {
         animatorSet.start();
     }
 
+    /**
+     * 播放交换动画(从中间变小的气泡动画)
+     */
+    public void playExchangeAniamtor(BalloonView balloonView) {
+        if (balloonView == null) {
+            return;
+        }
+        exchangeAnimator = balloonView.getAnimator();
+        exchangeAnimator.setDuration(BALLOON_SELECT_DURATION-BALLOON_EXCHANGE_DELAY);
+        exchangeAnimator.setStartDelay(BALLOON_EXCHANGE_DELAY);
+        exchangeAnimator.start();
+    }
+
     public void cancelAllAnimator() {
-        if (animatorSet != null && (animatorSet.isRunning() || animatorSet.isStarted())) {
+        if (isRunning(animatorSet)) {
             animatorSet.cancel();
         }
+        if (isRunning(exchangeAnimator)){
+            exchangeAnimator.cancel();
+        }
+    }
+
+    public boolean isRunning(Animator animator){
+        return animator!=null&&(animator.isStarted()||animator.isRunning());
     }
 
     private static class AnimatorHelperHolder {

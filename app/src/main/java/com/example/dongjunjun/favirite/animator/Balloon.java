@@ -46,6 +46,8 @@ public class Balloon extends Renderable {
     int position;//在list中的位置,和编号不一样，用来确定绘制顺序和首次判断smallPos
     int smallPos;//变小后的排列位置
 
+    private Paint backPaint;
+
     public Balloon(float radius, float x, float y) {
         super(x, y);
         this.radius = radius;
@@ -122,8 +124,11 @@ public class Balloon extends Renderable {
     @Override
     public void setPaint(Paint paint) {
         super.setPaint(paint);
-        RandomHelper.setBalloonColor(this);
-        RandomHelper.setTextColor(this);
+    }
+
+    public void draw(Canvas canvas, Paint paint) {
+        backPaint = paint;
+        draw(canvas);
     }
 
     @Override
@@ -131,6 +136,9 @@ public class Balloon extends Renderable {
         canvas.save();
         canvas.translate(translationX, translationY);
         canvas.scale(scale, scale);
+        if (backPaint != null) {
+            canvas.drawCircle(x, y, radius, backPaint);
+        }
         canvas.drawCircle(x, y, radius, paint);
         canvas.restore();
     }
