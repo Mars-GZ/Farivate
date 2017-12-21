@@ -2,9 +2,11 @@ package com.example.dongjunjun.favirite.animator;
 
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.support.annotation.IntDef;
 
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
+import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND_TO_SMALL;
@@ -31,12 +33,13 @@ import static com.example.dongjunjun.favirite.animator.helper.Direction.WS;
 
 public class Balloon extends Renderable {
 
+    private BalloonMeasure measure;
+
     private float radius;
     private float scale = 1f;
     private int state = NONE;
     int position;//在list中的位置,和编号不一样，用来确定绘制顺序和首次判断smallPos
     int smallPos;//变小后的排列位置
-    private BalloonMeasure measure;
 
     public Balloon(float radius, float x, float y) {
         super(x, y);
@@ -112,6 +115,12 @@ public class Balloon extends Renderable {
     }
 
     @Override
+    public void setPaint(Paint paint) {
+        super.setPaint(paint);
+        RandomHelper.setBalloonColor(this);
+    }
+
+    @Override
     protected void draw(Canvas canvas) {
         canvas.save();
         canvas.translate(translationX, translationY);
@@ -120,7 +129,7 @@ public class Balloon extends Renderable {
         canvas.restore();
     }
 
-    public boolean isCircle(float dx, float dy) {
+    public boolean inCircle(float dx, float dy) {
         float l = x + translationX - radius;
         float t = y + translationY - radius;
         float r = x + translationX + radius;
@@ -141,6 +150,8 @@ public class Balloon extends Renderable {
 
     /**
      * 根据当前位置确定下次浮动的坐标
+     *
+     * @param fix 所关联的其他Renderable
      */
     @Override
     protected void update(Renderable... fix) {

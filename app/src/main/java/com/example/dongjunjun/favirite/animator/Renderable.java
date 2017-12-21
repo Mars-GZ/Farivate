@@ -24,9 +24,10 @@ public abstract class Renderable {
     private @Direction
     int direction = Direction.RED_CENTER;//浮动方向
 
+    protected boolean isSelected = true;//被选中的状态
+
     protected RectF layoutBoundary = new RectF();//view的布局边界,相对于view的父布局
     protected RectF normalRebound = new RectF();//view的初始布局边界
-//    protected RectF boundary = new RectF();//view的浮动边界
 
     public Renderable(float x, float y) {
         this.x = x;
@@ -65,17 +66,13 @@ public abstract class Renderable {
         this.layoutBoundary.set(l, t, r, b);
     }
 
-//    public RectF getBoundary() {
-//        return boundary;
-//    }
-//
-//    public void setBoundary(RectF boundary) {
-//        this.boundary.set(boundary);
-//    }
-//
-//    public void setBoundary(float l, float t, float r, float b) {
-//        this.boundary.set(l, t, r, b);
-//    }
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
 
     public void setPaint(Paint paint) {
         this.paint = paint;

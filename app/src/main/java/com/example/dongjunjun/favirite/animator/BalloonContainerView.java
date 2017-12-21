@@ -116,7 +116,6 @@ public class BalloonContainerView extends FrameLayout {
         synchronized (mBalloons) {
             balloonView.setItemClickListener(mItemCLickListener);
             balloonView.getModel().setNum(i);
-            balloonView.getModel().setPosition(i);
             balloonView.getModel().setMeasure(mBalloonMeasure);
             mBalloons.add(balloonView);
             addView(balloonView);
@@ -169,7 +168,9 @@ public class BalloonContainerView extends FrameLayout {
         super.onAttachedToWindow();
         EventBus.getDefault().register(this);
         for (BalloonView balloonView : mBalloons) {
-            balloonView.getModel().setState(NONE);
+            Balloon balloon =  balloonView.getModel();
+            balloon.setPosition(balloon.getNum());
+            balloon.setState(NONE);
         }
         mBalloonMeasure.setCounts(mBalloons.size());
         mBalloonMeasure.setLines(getRawCount());

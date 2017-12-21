@@ -104,7 +104,7 @@ public class BalloonView extends FrameLayout {
             float y = event.getY();
             int state = mBalloon.getState();
             if (AnimatorHelper.getInstance().canPlayAnimator() && (state == NORMAL || state == SMALL)) {
-                if (mBalloon.isCircle(x, y)) {
+                if (mBalloon.inCircle(x, y)) {
                     EventBus.getDefault().post(new FlowEvent(true));
                     EventBus.getDefault().post(new SelectBalloonEvent(mBalloon.position));
                     if (mItemClickListener != null) {
@@ -156,7 +156,7 @@ public class BalloonView extends FrameLayout {
             mBalloon.setY(mBalloon.getRadius());
         }
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        paint.setColor(Color.YELLOW);
+        paint.setColor(Color.WHITE);
         mBalloon.setPaint(paint);
 
         //init Tag

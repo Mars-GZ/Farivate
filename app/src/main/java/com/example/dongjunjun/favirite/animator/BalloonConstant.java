@@ -19,6 +19,7 @@ public class BalloonConstant {
     public static final float TOP_MARGIN = 0 / 210f;//顶部气泡距顶的距离
     public static final float BOTTOM_MARGIN = 20 / 210f;//底部气泡距底的距离
     public static final int HORIZONTAL_MARGIN = 30;//初始气泡的左右间隔
+    public static final int GRADIENT_ANGLE = -45;//选中气泡渐变颜色角度
 
     //气泡浮动相关
     public static final float STEP = 0.3f;//每次浮动气泡的位移

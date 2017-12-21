@@ -2,7 +2,6 @@ package com.example.dongjunjun.favirite.animator;
 
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BIG_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BOTTOM_MARGIN;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.INIT_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.LINE_COUNT;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.SMALL_RADIUS;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.TOP_MARGIN;
