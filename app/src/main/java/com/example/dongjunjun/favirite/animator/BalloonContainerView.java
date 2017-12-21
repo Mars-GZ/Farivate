@@ -38,6 +38,7 @@ import static com.example.dongjunjun.favirite.animator.BalloonConstant.ODD_TOP;
  * 移除Balloon时会更新布局，
  * 若在绘制完成后再添加Balloon，需手动更新布局
  * 动态改变气泡的数量需谨慎
+ * 如果没有动态改变气泡的逻辑可以将synchronized去掉
  * Created by dongjunjun on 2017/12/12.
  */
 
@@ -152,6 +153,14 @@ public class BalloonContainerView extends FrameLayout {
                 mBalloons.remove(index);
                 mBalloons.add(balloonView);
             }
+            resetPosition();
+        }
+    }
+
+    private void resetPosition() {
+        int size = mBalloons.size();
+        for (int i = 0; i < size; i++) {
+            mBalloons.get(i).getModel().setPosition(i);
         }
     }
 

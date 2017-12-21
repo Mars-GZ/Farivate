@@ -34,7 +34,7 @@ public class Balloon extends Renderable {
     private float radius;
     private float scale = 1f;
     private int state = NONE;
-    int position;//位置,和编号不一样
+    int position;//在list中的位置,和编号不一样，用来确定绘制顺序和首次判断smallPos
     int smallPos;//变小后的排列位置
     private BalloonMeasure measure;
 
