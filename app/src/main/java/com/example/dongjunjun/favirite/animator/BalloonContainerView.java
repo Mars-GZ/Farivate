@@ -351,15 +351,16 @@ public class BalloonContainerView extends FrameLayout {
                 }
                 AnimatorHelper.getInstance().balloonsPlayTogether(mBalloons);
             }
+            mSelectBalloonView = balloonView;
         }
     }
 
     private void changePosition(BalloonView balloonView) {
         if (mSelectBalloonView != null && balloonView != null && mSelectBalloonView != balloonView) {
-            int selectPos = mSelectBalloonView.getModel().getPosition();
-            int normalPos = balloonView.getModel().getPosition();
-            balloonView.getModel().setPosition(selectPos);
-            mSelectBalloonView.getModel().setPosition(normalPos);
+            int selectPos = mSelectBalloonView.getModel().getSmallPosition();
+            int normalPos = balloonView.getModel().getSmallPosition();
+            balloonView.getModel().setSmallPosition(selectPos);
+            mSelectBalloonView.getModel().setSmallPosition(normalPos);
         }
     }
 
