@@ -29,6 +29,10 @@ public class Tag extends Renderable {
         super.setPaint(paint);
     }
 
+    public float getBaseLine(){
+        return baseLine;
+    }
+
     public void setBaseLine(float baseLine){
         this.baseLine = baseLine;
     }
@@ -42,8 +46,11 @@ public class Tag extends Renderable {
     }
 
     public void match(int height){
+        if (paint==null){
+            return;
+        }
         Paint.FontMetrics metrics = paint.getFontMetrics();
-        setBaseLine((int) ((height - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2));
+        setBaseLine((int) ((height - metrics.top - metrics.bottom) / 2));
         setX(parent.getX());
     }
 

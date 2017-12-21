@@ -115,14 +115,7 @@ public class RandomHelper {
         }
         boolean isSelected = balloon.isSelected();
         Paint paint = balloon.getPaint();
-        int num = balloon.getNum();
-        int raw = BalloonConstant.getRaw(num) & 1;
-        int column = BalloonConstant.getColumn(num) & 1;
-        int pos = 0;
-        if (raw == 1) {
-            pos++;
-        }
-        pos += raw + column;
+        int pos = getColorPosition(balloon);
         if (isSelected) {
             float x = balloon.getX();
             float y = balloon.getY();
@@ -133,7 +126,36 @@ public class RandomHelper {
         } else {
             paint.setColor(Color.WHITE);
         }
+    }
+
+    private static int getColorPosition(Balloon balloon){
+        if (balloon==null){
+            return 0;
+        }
+        int num = balloon.getNum();
+        int raw = BalloonConstant.getRaw(num) & 1;
+        int column = BalloonConstant.getColumn(num) & 1;
+        int pos = 0;
+        if (raw == 1) {
+            pos++;
+        }
+        pos += raw + column;
+        return pos;
+    }
+
+    /**
+     * 文字的颜色随机
+     *
+     * @param balloon
+     * @return
+     */
+    public static void setTextColor(Balloon balloon) {
+        if (balloon==null){
+            return;
+        }
+        int pos = getColorPosition(balloon);
         List<Renderable> children = balloon.getChildren();
+        boolean isSelected = balloon.isSelected();
         if (children == null) {
             return;
         }

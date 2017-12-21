@@ -72,6 +72,7 @@ public class BalloonContainerView extends FrameLayout {
         mBalloonCallBack = new BalloonViewLifeCallBack();
         mHandlerThread = new BalloonHandlerThread(this, TAG);
         mBalloonMeasure = new BalloonMeasure();
+        setClipChildren(false);
     }
 
     public void setBalloonItemClickListener(BalloonItemClickListener clickListener) {

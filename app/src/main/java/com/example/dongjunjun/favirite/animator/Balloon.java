@@ -2,6 +2,7 @@ package com.example.dongjunjun.favirite.animator;
 
 import android.animation.ValueAnimator;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.IntDef;
 
@@ -19,6 +20,7 @@ import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_E
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL_TO_EXPAND;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_TEXT_SIZE;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.ES;
@@ -121,6 +123,7 @@ public class Balloon extends Renderable {
     public void setPaint(Paint paint) {
         super.setPaint(paint);
         RandomHelper.setBalloonColor(this);
+        RandomHelper.setTextColor(this);
     }
 
     @Override

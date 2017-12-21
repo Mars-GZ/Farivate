@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mBalloonContainer = findViewById(R.id.test);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 6; i++) {
             mBalloonContainer.addBalloon("这是" + i);
         }
         mBalloonContainer.post(new Runnable() {

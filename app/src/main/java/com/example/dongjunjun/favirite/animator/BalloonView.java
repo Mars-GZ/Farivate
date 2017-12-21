@@ -20,6 +20,7 @@ import android.widget.FrameLayout;
 import com.example.dongjunjun.favirite.animator.event.FlowEvent;
 import com.example.dongjunjun.favirite.animator.event.SelectBalloonEvent;
 import com.example.dongjunjun.favirite.animator.helper.AnimatorHelper;
+import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
 import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -34,7 +35,6 @@ import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL_TO_EXPAND;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_CAPACITY;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_TEXT_SIZE;
 
 /**
  * 盛放兴趣标签的View
@@ -189,7 +189,6 @@ public class BalloonView extends FrameLayout {
         mBalloon.reset();
         mBalloon.match();
         mMajorTag.reset();
-        mMajorTag.match((int) mBalloon.getLayoutBoundary().height());
         initAnimator();
         return animator;
     }
@@ -235,6 +234,7 @@ public class BalloonView extends FrameLayout {
                 float dx = targetX * value;
                 float dy = targetY * value;
                 float dr = targetR * value;
+                int state = mBalloon.getState();
                 RectF layoutBoundary = mBalloon.getLayoutBoundary();
                 RectF normalRebound = mBalloon.getNormalRebound();
                 layoutBoundary.left = normalRebound.left - dx;
@@ -244,6 +244,12 @@ public class BalloonView extends FrameLayout {
                 mBalloon.setRadius(layoutBoundary.width() / 2);
                 mBalloon.match();
                 mMajorTag.match((int) layoutBoundary.height());
+                if (state == NORMAL_TO_EXPAND || state == SMALL_TO_EXPAND) {
+                    mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * value);
+                } else if (state == EXPAND_TO_SMALL) {
+                    mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * (1 - value));
+                }
+                RandomHelper.setBalloonColor(mBalloon);
                 requestLayout();
                 invalidate();
             }
