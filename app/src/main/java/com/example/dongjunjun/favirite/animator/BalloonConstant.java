@@ -29,10 +29,10 @@ public class BalloonConstant {
     //显示个数相关
     public static final int BALLOON_CAPACITY = 10;//气泡的初始容量
     public static final int TAG_CAPACITY = 6;//标签的初始容量
-    public static final int LINE_COUNT = 3;//每行气泡的个数
+    public static final int LINE_COUNT = 4;//每行气泡的个数
     //标签大小相关
     public static final int TAG_TEXT_SIZE = 42;
-    public static final float TAG_BACK_MULTI = 46 / 26f;//文字背景对文字的倍数
+    public static final float TAG_BACK_MULTI = 40 / 26f;//文字背景对文字的倍数
     //气泡动画相关
     public static final long BALLOON_SELECT_DURATION = 800;
     public static final long BALLOON_EXCHANGE_DELAY = 80;
@@ -58,7 +58,7 @@ public class BalloonConstant {
     }
 
     /**
-     * 扩展透明度函数关系式
+     * 背景色扩展透明度函数关系式
      * <p>
      * x=0.8,y=255
      * x=1,y=0
@@ -72,7 +72,7 @@ public class BalloonConstant {
     }
 
     /**
-     * 缩小透明度函数关系式
+     * 背景色缩小透明度函数关系式
      * <p>
      * x=0,y=0
      * x=0.2,y=255

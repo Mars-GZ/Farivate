@@ -236,6 +236,7 @@ public class BalloonView extends FrameLayout {
                 if (mBalloon == null) {
                     return;
                 }
+                //大小相关
                 float value = (float) animation.getAnimatedValue();
                 float dx = targetX * value;
                 float dy = targetY * value;
@@ -250,6 +251,8 @@ public class BalloonView extends FrameLayout {
                 mBalloon.setRadius(layoutBoundary.width() / 2);
                 mBalloon.match();
                 mMajorTag.match((int) layoutBoundary.height());
+
+                //颜色和透明度相关
                 RandomHelper.setBalloonColor(mBalloon);
                 if (state == NORMAL_TO_EXPAND || state == SMALL_TO_EXPAND) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * value);
@@ -263,6 +266,7 @@ public class BalloonView extends FrameLayout {
                         mMajorTag.backPaint.setAlpha(255 - alpha);
                     } else {
                         mMajorTag.backPaint.setAlpha(0);
+                        mBalloon.setAlpha(255);
                     }
                 } else if (state == EXPAND_TO_SMALL) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * (1 - value));
@@ -273,6 +277,7 @@ public class BalloonView extends FrameLayout {
                     if (value > 0.2) {
                         mMajorTag.setSelected(false);
                         mMajorTag.backPaint.setAlpha(0);
+                        mBalloon.setAlpha(255);
                     } else {
                         int alpha = BalloonConstant.getSmallAlpha(value);
                         mBalloon.setAlpha(alpha);
@@ -280,6 +285,7 @@ public class BalloonView extends FrameLayout {
                         mMajorTag.backPaint.setAlpha(255 - alpha);
                     }
                 }
+
                 requestLayout();
                 invalidate();
             }
