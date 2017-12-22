@@ -32,9 +32,10 @@ public class BalloonConstant {
     public static final int LINE_COUNT = 3;//每行气泡的个数
     //标签大小相关
     public static final int TAG_TEXT_SIZE = 42;
+    public static final float TAG_BACK_MULTI = 46 / 26f;//文字背景对文字的倍数
     //气泡动画相关
     public static final long BALLOON_SELECT_DURATION = 800;
-    public static final long BALLOON_EXCHANGE_DELAY = 300;
+    public static final long BALLOON_EXCHANGE_DELAY = 80;
 
     /**
      * 获取所在行数
@@ -81,6 +82,6 @@ public class BalloonConstant {
      * @return
      */
     public static int getSmallAlpha(float value) {
-        return (int) (6375 * value*value);
+        return (int) (6375 * value * value);
     }
 }

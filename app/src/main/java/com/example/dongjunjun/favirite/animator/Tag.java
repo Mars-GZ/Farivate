@@ -9,8 +9,8 @@ import android.graphics.Paint;
 
 public class Tag extends Renderable {
 
-    private String text;
-    private float baseLine;
+    protected String text;
+    protected float baseLine;
 
     public Tag(float x, float y) {
         super(x, y);

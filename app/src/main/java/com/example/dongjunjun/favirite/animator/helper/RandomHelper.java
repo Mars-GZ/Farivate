@@ -3,10 +3,12 @@ package com.example.dongjunjun.favirite.animator.helper;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Shader;
 
 import com.example.dongjunjun.favirite.animator.Balloon;
 import com.example.dongjunjun.favirite.animator.BalloonConstant;
+import com.example.dongjunjun.favirite.animator.MajorTag;
 import com.example.dongjunjun.favirite.animator.Renderable;
 import com.example.dongjunjun.favirite.animator.Tag;
 
@@ -129,8 +131,8 @@ public class RandomHelper {
         }
     }
 
-    private static int getColorPosition(Balloon balloon){
-        if (balloon==null){
+    private static int getColorPosition(Balloon balloon) {
+        if (balloon == null) {
             return 0;
         }
         int num = balloon.getNum();
@@ -151,7 +153,7 @@ public class RandomHelper {
      * @return
      */
     public static void setTextColor(Balloon balloon) {
-        if (balloon==null){
+        if (balloon == null) {
             return;
         }
         int pos = getColorPosition(balloon);
@@ -182,5 +184,38 @@ public class RandomHelper {
                 tag.setPaint(tagPaint);
             }
         }
+    }
+
+    public static void setTagTextColor(Tag tag){
+        boolean isSelected = tag.isSelected();
+        int pos = getColorPosition((Balloon) tag.getParent());
+        if (tag == null) {
+            return;
+        }
+        Paint tagPaint;
+        if (tag.getPaint() == null) {
+            tagPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        } else {
+            tagPaint = tag.getPaint();
+        }
+        tagPaint.setTextSize(TAG_TEXT_SIZE);
+        tagPaint.setTextAlign(Paint.Align.CENTER);
+        if (isSelected) {
+            tagPaint.setColor(Color.WHITE);
+        } else {
+            tagPaint.setColor(text_color[pos]);
+        }
+        tag.setPaint(tagPaint);
+    }
+
+    public static void setMajorTagBackColor(MajorTag tag, Paint paint) {
+        if (tag == null || paint == null) {
+            return;
+        }
+        int pos = getColorPosition((Balloon) tag.getParent());
+        RectF rectF = tag.getBack();
+        LinearGradient gradient = new LinearGradient(rectF.left, rectF.top, rectF.right, rectF.bottom,
+                color[pos], null, Shader.TileMode.MIRROR);
+        paint.setShader(gradient);
     }
 }

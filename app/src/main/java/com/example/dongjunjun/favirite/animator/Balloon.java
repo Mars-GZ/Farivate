@@ -1,16 +1,10 @@
 package com.example.dongjunjun.favirite.animator;
 
-import android.animation.ValueAnimator;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.annotation.IntDef;
 
 import com.example.dongjunjun.favirite.animator.helper.FlowHelper;
-import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.EXPAND_TO_SMALL;
@@ -20,7 +14,6 @@ import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_E
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NORMAL_TO_SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.SMALL_TO_EXPAND;
-import static com.example.dongjunjun.favirite.animator.BalloonConstant.TAG_TEXT_SIZE;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.E;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.EN;
 import static com.example.dongjunjun.favirite.animator.helper.Direction.ES;
@@ -213,11 +206,11 @@ public class Balloon extends Renderable {
     @interface State {
         int NONE = -1;//初始时无值，需要主动去赋值
         int NORMAL = 0;
-        int NORMAL_TO_EXPAND = 1;
-        int NORMAL_TO_SMALL = 2;
-        int SMALL_TO_EXPAND = 3;
-        int EXPAND_TO_SMALL = 4;
-        int SMALL = 5;
+        int NORMAL_TO_SMALL = 1;
+        int EXPAND_TO_SMALL = 2;
+        int SMALL = 3;
+        int SMALL_TO_EXPAND = 4;
+        int NORMAL_TO_EXPAND = 5;
         int EXPAND = 6;
     }
 }

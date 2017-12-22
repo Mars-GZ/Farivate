@@ -168,12 +168,13 @@ public class BalloonView extends FrameLayout {
         if (mMajorTag.getPaint() != null) {
             Paint.FontMetrics metrics = mMajorTag.getPaint().getFontMetrics();
             mMajorTag.setBaseLine((mBalloon.getY() * 2 - paint.getStrokeWidth() - metrics.top - metrics.bottom) / 2);
+            mMajorTag.calculateTextData();
         }
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        mBalloon.draw(canvas,BalloonMeasure.backPaint);
+        mBalloon.draw(canvas, BalloonMeasure.backPaint);
         mMajorTag.draw(canvas);
     }
 
@@ -253,11 +254,15 @@ public class BalloonView extends FrameLayout {
                 if (state == NORMAL_TO_EXPAND || state == SMALL_TO_EXPAND) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * value);
                     if (value >= 0.8) {
-                        if (mMajorTag.isSelected()) {
-                            mMajorTag.setSelected(false);
-                            RandomHelper.setTextColor(mBalloon);
+                        if (!mMajorTag.isSelected()) {
+                            mMajorTag.setSelected(true);
+                            RandomHelper.setTagTextColor(mMajorTag);
                         }
-                        mBalloon.setAlpha(BalloonConstant.getExpandAlpha(value));
+                        int alpha = BalloonConstant.getExpandAlpha(value);
+                        mBalloon.setAlpha(alpha);
+                        mMajorTag.backPaint.setAlpha(255 - alpha);
+                    } else {
+                        mMajorTag.backPaint.setAlpha(0);
                     }
                 } else if (state == EXPAND_TO_SMALL) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * (1 - value));
@@ -266,12 +271,13 @@ public class BalloonView extends FrameLayout {
                         RandomHelper.setBalloonColor(mBalloon);
                     }
                     if (value > 0.2) {
-                        if (!mMajorTag.isSelected()) {
-                            mMajorTag.setSelected(true);
-                            RandomHelper.setTextColor(mBalloon);
-                        }
-                    }else {
-                        mBalloon.setAlpha(BalloonConstant.getSmallAlpha(value));
+                        mMajorTag.setSelected(false);
+                        mMajorTag.backPaint.setAlpha(0);
+                    } else {
+                        int alpha = BalloonConstant.getSmallAlpha(value);
+                        mBalloon.setAlpha(alpha);
+                        mMajorTag.setSelected(true);
+                        mMajorTag.backPaint.setAlpha(255 - alpha);
                     }
                 }
                 requestLayout();

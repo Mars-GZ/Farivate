@@ -28,14 +28,18 @@ public class BalloonMeasure {
     private int bottom_margin;
 
     public static Paint backPaint;
+    public static Paint tagBackPaint;//画笔缓存
 
-    public static void initPaint(){
+    public static void initPaint() {
         backPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backPaint.setColor(Color.WHITE);
+        tagBackPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        tagBackPaint.setColor(Color.WHITE);
     }
 
-    public static void releasePaint(){
+    public static void releasePaint() {
         backPaint = null;
+        tagBackPaint = null;
     }
 
     public void setWidth(int width) {
