@@ -180,7 +180,7 @@ public class BalloonContainerView extends FrameLayout {
         mBalloonMeasure.setLines(getRawCount());
         mBalloonMeasure.calculateMargin();
 
-        for (int i = 0; i< SubTag.SUBTAG_CAPACITY ;i++) {
+        for (int i = 0; i < SubTag.SUBTAG_CAPACITY; i++) {
             Paint bgCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             bgCenterPaint.setColor(Color.parseColor("#f4f4f4"));
             Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -189,7 +189,7 @@ public class BalloonContainerView extends FrameLayout {
             textPaint.setColor(Color.parseColor("#888888"));
             Paint bgOtherPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
-            final SubTag subTag = new SubTag(0,0,
+            final SubTag subTag = new SubTag(0, 0,
                     new BallInfo(30, 15, 15),
                     new RectInfo(105, 30, 60, 30, 15),
                     new RectInfo(0, 0, 195, 60, 30),
@@ -336,6 +336,11 @@ public class BalloonContainerView extends FrameLayout {
             changeBalloonToFront((BalloonView) child);
         }
         super.bringChildToFront(child);
+        if (child instanceof BalloonView) {
+            for (SubTagView tagView : mSubTags) {
+                tagView.bringToFront();
+            }
+        }
     }
 
     private int getIndexBalloon(BalloonView child) {
@@ -427,7 +432,7 @@ public class BalloonContainerView extends FrameLayout {
                 }
                 AnimatorHelper.getInstance().balloonsPlayTogether(mBalloons);
             }
-
+            mSelectBalloonView = balloonView;
             //在这里加入显示与隐藏subtag的逻辑
             //或者考虑与AnimatorHelper中balloonsPlayTogether写在一起
         }
