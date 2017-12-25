@@ -72,7 +72,7 @@ public class AnimatorHelper {
     /**
      * 播放交换动画(从中间变小的气泡动画)
      */
-    public void playExchangeAniamtor(BalloonView balloonView) {
+    public void playExchangeAnimator(BalloonView balloonView) {
         if (balloonView == null) {
             return;
         }

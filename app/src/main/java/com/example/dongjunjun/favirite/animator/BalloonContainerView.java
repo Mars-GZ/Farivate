@@ -356,7 +356,7 @@ public class BalloonContainerView extends FrameLayout {
                 normalBalloon.setState(Balloon.State.SMALL_TO_EXPAND);
                 normalBalloon.setCurSelected(true);
                 AnimatorHelper.getInstance().balloonsPlayTogether(balloonView);
-                AnimatorHelper.getInstance().playExchangeAniamtor(mSelectBalloonView);
+                AnimatorHelper.getInstance().playExchangeAnimator(mSelectBalloonView);
             } else {
                 Balloon normalBalloon = balloonView.getModel();
                 normalBalloon.setState(Balloon.State.NORMAL_TO_EXPAND);
