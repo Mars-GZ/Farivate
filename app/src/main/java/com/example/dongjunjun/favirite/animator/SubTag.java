@@ -17,6 +17,8 @@ public class SubTag extends Tag {
     private Paint mBgCenterPaint;
     private Paint mBgOtherPaint;
 
+    public static final int SUBTAG_CAPACITY = 6;
+
     public SubTag(float x, float y) {
         super(x, y);
     }
