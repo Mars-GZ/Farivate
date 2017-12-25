@@ -34,7 +34,7 @@ public class BalloonConstant {
     public static final int TAG_TEXT_SIZE = 42;
     public static final float TAG_BACK_MULTI = 40 / 26f;//文字背景对文字的倍数
     //气泡动画相关
-    public static final long BALLOON_SELECT_DURATION = 800;
+    public static final long BALLOON_SELECT_DURATION = 600;
     public static final long BALLOON_EXCHANGE_DELAY = 80;
 
     /**
@@ -72,6 +72,19 @@ public class BalloonConstant {
     }
 
     /**
+     * 文字颜色扩展透明度函数关系式
+     * <p>
+     * x=0.8,y=128
+     * x=1,y=255
+     *
+     * @param value
+     * @return
+     */
+    public static int getExpandTextAlpha(float value) {
+         return (int) (635*value-380);
+    }
+
+    /**
      * 背景色缩小透明度函数关系式
      * <p>
      * x=0,y=0
@@ -83,5 +96,18 @@ public class BalloonConstant {
      */
     public static int getSmallAlpha(float value) {
         return (int) (6375 * value * value);
+    }
+
+    /**
+     * 文字颜色缩小透明度函数关系式
+     * <p>
+     * x=0,y=128
+     * x=0.2,y=255
+     *
+     * @param value
+     * @return
+     */
+    public static int getSmallTextAlpha(float value) {
+        return (int) (635*value);
     }
 }

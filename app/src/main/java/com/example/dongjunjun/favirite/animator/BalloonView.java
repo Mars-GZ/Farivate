@@ -264,9 +264,11 @@ public class BalloonView extends FrameLayout {
                         int alpha = BalloonConstant.getExpandAlpha(value);
                         mBalloon.setAlpha(alpha);
                         mMajorTag.backPaint.setAlpha(255 - alpha);
+                        mMajorTag.setAlpha(BalloonConstant.getExpandTextAlpha(value));
                     } else {
                         mMajorTag.backPaint.setAlpha(0);
                         mBalloon.setAlpha(255);
+                        mMajorTag.setAlpha(255);
                     }
                 } else if (state == EXPAND_TO_SMALL) {
                     mMajorTag.setBaseLine(mMajorTag.getBaseLine() + mBalloon.getRadius() * (1 - value));
@@ -278,11 +280,13 @@ public class BalloonView extends FrameLayout {
                         mMajorTag.setSelected(false);
                         mMajorTag.backPaint.setAlpha(0);
                         mBalloon.setAlpha(255);
+                        mMajorTag.setAlpha(255);
                     } else {
                         int alpha = BalloonConstant.getSmallAlpha(value);
                         mBalloon.setAlpha(alpha);
                         mMajorTag.setSelected(true);
                         mMajorTag.backPaint.setAlpha(255 - alpha);
+                        mMajorTag.setAlpha(BalloonConstant.getExpandTextAlpha(value));
                     }
                 }
 
