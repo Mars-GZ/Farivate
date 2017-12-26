@@ -434,7 +434,7 @@ public class BalloonContainerView extends FrameLayout {
             BalloonView balloonView = mBalloons.get(event.position);
             changePosition(balloonView);
             //在这里获取balloonView的标签数量 目前用5个标签吧
-            final int newTagCount = 5;
+            final int newTagCount = 6;
             if (mSelectBalloonView != null) {
                 Balloon selectBalloon = mSelectBalloonView.getModel();
                 Balloon normalBalloon = balloonView.getModel();
@@ -445,7 +445,7 @@ public class BalloonContainerView extends FrameLayout {
                 AnimatorHelper.getInstance().balloonsPlayTogether(balloonView);
                 AnimatorHelper.getInstance().playExchangeAnimator(mSelectBalloonView);
 
-                int oldTagCount = 5;
+                int oldTagCount = 6;
                 for (int i = 0; i < oldTagCount; i++) {
                     final SubTagView subTagView = mSubTags.get(i);
                     //可以搞一个动画集一起跑
@@ -511,7 +511,7 @@ public class BalloonContainerView extends FrameLayout {
             bgCenterPaint.setColor(Color.parseColor("#f4f4f4"));
             Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setTextAlign(Paint.Align.CENTER);
-            textPaint.setTextSize(39);
+            textPaint.setTextSize(BalloonConstant.SUBTAG_TEXT_SIZE);
             textPaint.setColor(Color.parseColor("#888888"));
             Paint bgOtherPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
@@ -525,8 +525,8 @@ public class BalloonContainerView extends FrameLayout {
                     bgOtherPaint
             );
             if (subTag.isSelected()) {
-                subTag.getLeftBall().setX(15);
-                subTag.getRightRect().setLeft(75);
+                subTag.getLeftBall().setX((int)(BalloonMeasure.getBigRadius()*0.0625));
+                subTag.getRightRect().setLeft((int)(BalloonMeasure.getBigRadius()*0.75));
                 Shader shader = new LinearGradient(
                         0,
                         0,
