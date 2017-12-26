@@ -23,7 +23,7 @@ public class BalloonMeasure {
     public int balloon_counts = 6;//气泡总个数
     private int small_margin;//气泡变小后中间的间距
     private int small_radius;//小气泡的大小
-    private int big_radius;//大气泡的大小
+    private static int big_radius;//大气泡的大小
     private int top_margin;
     private int bottom_margin;
 
@@ -173,7 +173,7 @@ public class BalloonMeasure {
         return small_radius;
     }
 
-    public int getBigRadius() {
+    public static int getBigRadius() {
         return big_radius;
     }
 }

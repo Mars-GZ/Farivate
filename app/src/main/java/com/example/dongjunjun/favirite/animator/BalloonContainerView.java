@@ -1,10 +1,15 @@
 package com.example.dongjunjun.favirite.animator;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -27,6 +32,7 @@ import java.util.List;
 
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_CAPACITY;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_EXCHANGE_DELAY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_DELAY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
@@ -75,6 +81,13 @@ public class BalloonContainerView extends FrameLayout {
         mHandlerThread = new BalloonHandlerThread(this, TAG);
         mBalloonMeasure = new BalloonMeasure();
         setClipChildren(false);
+
+        for (int i = 0; i< SubTag.SUBTAG_CAPACITY; i++) {
+            SubTagView subTagView = new SubTagView(getContext());
+            mSubTags.add(subTagView);
+            addView(subTagView);
+            subTagView.setVisibility(GONE);
+        }
     }
 
     public void setBalloonItemClickListener(BalloonItemClickListener clickListener) {
@@ -180,29 +193,8 @@ public class BalloonContainerView extends FrameLayout {
         mBalloonMeasure.setLines(getRawCount());
         mBalloonMeasure.calculateMargin();
 
-        for (int i = 0; i < SubTag.SUBTAG_CAPACITY; i++) {
-            Paint bgCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            bgCenterPaint.setColor(Color.parseColor("#f4f4f4"));
-            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            textPaint.setTextAlign(Paint.Align.CENTER);
-            textPaint.setTextSize(39);
-            textPaint.setColor(Color.parseColor("#888888"));
-            Paint bgOtherPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-            bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
-            final SubTag subTag = new SubTag(0, 0,
-                    new BallInfo(30, 15, 15),
-                    new RectInfo(105, 30, 60, 30, 15),
-                    new RectInfo(0, 0, 195, 60, 30),
-                    "搞笑帮追",
-                    textPaint,
-                    bgCenterPaint,
-                    bgOtherPaint
-            );
-            SubTagView subTagView = new SubTagView(getContext());
-            subTagView.setSubTag(subTag);
-            mSubTags.add(subTagView);
-            addView(subTagView);
-        }
+
+
     }
 
     private void startThread() {
@@ -254,8 +246,7 @@ public class BalloonContainerView extends FrameLayout {
                         child.measure(MeasureSpec.makeMeasureSpec((int) balloon.getLayoutBoundary().width(), MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec((int) balloon.getLayoutBoundary().height(), MeasureSpec.EXACTLY));
                     }
                 } else {
-                    SubTag subTag = (SubTag) child.getTag();
-                    child.measure(MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
+                    //child.measure(MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(childHeightMeasureSpec, MeasureSpec.EXACTLY));
                 }
             }
         }
@@ -286,27 +277,55 @@ public class BalloonContainerView extends FrameLayout {
         int size = mSubTags.size();
         for (int i = 0; i < size; i++) {
             SubTagView subTagView = mSubTags.get(i);
-            int centerX = getMeasuredWidth() / 2;
-            int centerY = getMeasuredHeight() / 2;
-            switch (i) {
-                case 0:
-                    subTagView.layout((int) (centerX - 0.375 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.875 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.375 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.625 * mBalloonMeasure.getBigRadius()));
-                    break;
-                case 1:
-                    subTagView.layout((int) (centerX - 0.85 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.0375 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
-                    break;
-                case 2:
-                    subTagView.layout((int) (centerX + 0.0375 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.85 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
-                    break;
-                case 3:
-                    subTagView.layout((int) (centerX - 0.9375 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
-                    break;
-                case 4:
-                    subTagView.layout((int) (centerX + 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.9375 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
-                    break;
-                case 5:
-                    subTagView.layout((int) (centerX - 0.85 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.0375 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.5 * mBalloonMeasure.getBigRadius()));
-                    break;
+            if (subTagView.getVisibility() != View.GONE) {
+                boolean isSelected = subTagView.getSubTag().isSelected();
+                int centerX = getMeasuredWidth() / 2;
+                int centerY = getMeasuredHeight() / 2;
+                if (isSelected) {
+                    switch (i) {
+                        case 0:
+                            subTagView.layout((int) (centerX - 0.875 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.875 * BalloonMeasure.getBigRadius()), (int) (centerX + 0.1875 * BalloonMeasure.getBigRadius()), (int) (centerY - 0.625 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 1:
+                            subTagView.layout((int) (centerX - 0.85 * mBalloonMeasure.getBigRadius() - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.0375 * mBalloonMeasure.getBigRadius() - 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 2:
+                            subTagView.layout((int) (centerX + 0.0375 * mBalloonMeasure.getBigRadius() + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.85 * mBalloonMeasure.getBigRadius() + 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 3:
+                            subTagView.layout((int) (centerX - 0.9375 * mBalloonMeasure.getBigRadius() - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.125 * mBalloonMeasure.getBigRadius() - 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 4:
+                            subTagView.layout((int) (centerX + 0.125 * mBalloonMeasure.getBigRadius() + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.9375 * mBalloonMeasure.getBigRadius() + 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 5:
+                            subTagView.layout((int) (centerX - 0.85 * mBalloonMeasure.getBigRadius() - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0.0375 * mBalloonMeasure.getBigRadius() - 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.5 * mBalloonMeasure.getBigRadius()));
+                            break;
+                    }
+
+                } else {
+                    switch (i) {
+                        case 0:
+                            subTagView.layout((int) (centerX - 0.53125 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.875 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.53125 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.625 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 1:
+                            subTagView.layout((int) (centerX - 0.975 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.0875 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 2:
+                            subTagView.layout((int) (centerX - 0.0875 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.5 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.975 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.25 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 3:
+                            subTagView.layout((int) (centerX - 1.0625 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 4:
+                            subTagView.layout((int) (centerX + 0 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX + 1.0625 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
+                            break;
+                        case 5:
+                            subTagView.layout((int) (centerX - 0.975 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.0875 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.5 * mBalloonMeasure.getBigRadius()));
+                            break;
+                    }
+                }
+
             }
         }
     }
@@ -410,8 +429,12 @@ public class BalloonContainerView extends FrameLayout {
         if (event == null || event.position == -1) {
             return;
         } else {
+
+            //具体逻辑在下面注释
             BalloonView balloonView = mBalloons.get(event.position);
             changePosition(balloonView);
+            //在这里获取balloonView的标签数量 目前用5个标签吧
+            final int newTagCount = 5;
             if (mSelectBalloonView != null) {
                 Balloon selectBalloon = mSelectBalloonView.getModel();
                 Balloon normalBalloon = balloonView.getModel();
@@ -421,6 +444,30 @@ public class BalloonContainerView extends FrameLayout {
                 normalBalloon.setCurSelected(true);
                 AnimatorHelper.getInstance().balloonsPlayTogether(balloonView);
                 AnimatorHelper.getInstance().playExchangeAnimator(mSelectBalloonView);
+
+                int oldTagCount = 5;
+                for (int i = 0; i < oldTagCount; i++) {
+                    final SubTagView subTagView = mSubTags.get(i);
+                    //可以搞一个动画集一起跑
+                    if (subTagView.getSubTag().isSelected()) {
+                        subTagView.getRetractionAnimator(subTagView, (int) BALLOON_EXCHANGE_DELAY).start();
+                    }
+                    ValueAnimator animator = subTagView.getAlphaTo0Animator(subTagView, 300);
+                    animator.setStartDelay(BALLOON_EXCHANGE_DELAY);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            resetSubTagView(newTagCount);
+                            ValueAnimator animator1 = subTagView.getAlphaTo255Animator(subTagView, 300);
+                            animator1.setStartDelay(300);
+                            animator1.start();
+                        }
+                    });
+                    animator.start();
+                }
+
+
             } else {
                 Balloon normalBalloon = balloonView.getModel();
                 normalBalloon.setState(Balloon.State.NORMAL_TO_EXPAND);
@@ -431,11 +478,73 @@ public class BalloonContainerView extends FrameLayout {
                     }
                 }
                 AnimatorHelper.getInstance().balloonsPlayTogether(mBalloons);
+
+                //第一次点击 渐显
+                //先设置每个view是否可点击
+                resetSubTagView(newTagCount);
+                for (int i = 0; i < newTagCount; i++) {
+                    mSubTags.get(i).setVisibility(VISIBLE);
+                    SubTag subTag = mSubTags.get(i).getSubTag();
+                    if (subTag.isSelected()) {
+                        mSubTags.get(i).setClickable(false);
+                    } else {
+                        mSubTags.get(i).setClickable(true);
+                    }
+                }
+
             }
             mSelectBalloonView = balloonView;
-            //在这里加入显示与隐藏subtag的逻辑
-            //或者考虑与AnimatorHelper中balloonsPlayTogether写在一起
         }
+    }
+
+    private void resetSubTagView(int newTagCount) {
+
+
+        for (int i = newTagCount; i < SubTag.SUBTAG_CAPACITY; i++) {
+            mSubTags.get(i).setVisibility(GONE);
+        }
+
+        for (int i = 0; i < newTagCount; i++) {
+            //根据这个新的mSubTags
+
+            Paint bgCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            bgCenterPaint.setColor(Color.parseColor("#f4f4f4"));
+            Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            textPaint.setTextAlign(Paint.Align.CENTER);
+            textPaint.setTextSize(39);
+            textPaint.setColor(Color.parseColor("#888888"));
+            Paint bgOtherPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
+            SubTag subTag = new SubTag(0, 0,
+                    new BallInfo((int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.0625), (int)(BalloonMeasure.getBigRadius()*0.0625)),
+                    new RectInfo((int)(BalloonMeasure.getBigRadius()*0.5625), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.0625)),
+                    new RectInfo((int)(BalloonMeasure.getBigRadius()*0.125), 0, (int)(BalloonMeasure.getBigRadius()*0.8125), (int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.125)),
+                    "搞笑帮追",
+                    textPaint,
+                    bgCenterPaint,
+                    bgOtherPaint
+            );
+            if (subTag.isSelected()) {
+                subTag.getLeftBall().setX(15);
+                subTag.getRightRect().setLeft(75);
+                Shader shader = new LinearGradient(
+                        0,
+                        0,
+                        (int)(BalloonMeasure.getBigRadius()*1.0625),
+                        (int)(BalloonMeasure.getBigRadius()*0.25),
+                        Color.parseColor("#54c4ff"),
+                        Color.parseColor("#3d73ff"),
+                        Shader.TileMode.CLAMP);
+                subTag.getBgOtherPaint().setShader(shader);
+                subTag.getBgCenterPaint().setShader(shader);
+                subTag.getTextPaint().setColor(Color.parseColor("#ffffff"));
+            }
+            subTag.setIndex(i);
+            mSubTags.get(i).setSubTag(subTag);
+        }
+
+
+
     }
 
     private void changePosition(BalloonView balloonView) {

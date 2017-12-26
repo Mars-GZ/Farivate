@@ -1,14 +1,24 @@
 package com.example.dongjunjun.favirite.animator;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ValueAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GestureDetectorCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 
 /**
@@ -25,13 +35,18 @@ public class SubTagView extends View {
     RectF rectRight;
     SubTag subTag;
 
+    GestureDetectorCompat mGestureCompat;
+
+
     public SubTagView(Context context) {
         super(context);
+        init();
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     public SubTagView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        init();
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
@@ -42,6 +57,16 @@ public class SubTagView extends View {
     @TargetApi(21)
     public SubTagView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
+    }
+
+    private void init() {
+        //setClipChildren(false);
+        mGestureCompat = new GestureDetectorCompat(getContext(), new GestureDetector.SimpleOnGestureListener() {
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                return true;
+            }
+        });
     }
 
     @Override
@@ -75,6 +100,8 @@ public class SubTagView extends View {
         rectCenter = subTag.getCenterRect().toRect();
         rectRight = subTag.getRightRect().toRect();
 
+
+
         int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
         canvas.drawCircle(subTag.getLeftBall().getX(), subTag.getLeftBall().getY(), subTag.getLeftBall().getR(), mBgOtherPaint);
         canvas.drawRoundRect(rectRight, subTag.getRightRect().getR(), subTag.getRightRect().getR(), mBgOtherPaint);
@@ -85,7 +112,7 @@ public class SubTagView extends View {
 
         Paint.FontMetrics metrics = mTextPaint.getFontMetrics();
         float textCenterVerticalBaselineY = subTag.getCenterRect().getHeight() / 2 - metrics.descent + (metrics.bottom - metrics.top) / 2;
-        canvas.drawText(subTag.getText(), (subTag.getCenterRect().getWidth())/2+ subTag.getCenterRect().getLeft(), textCenterVerticalBaselineY, mTextPaint);
+        canvas.drawText(subTag.getText(), (subTag.getCenterRect().getWidth()) / 2 + subTag.getCenterRect().getLeft(), textCenterVerticalBaselineY, mTextPaint);
     }
 
     @Override
@@ -100,5 +127,191 @@ public class SubTagView extends View {
 
     public SubTag getSubTag() {
         return subTag;
+    }
+
+    public ValueAnimator getAlphaTo0Animator(final SubTagView target, int duration) {
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+
+
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            private SubTag tagInfo = target.getSubTag();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                float fraction = animation.getAnimatedFraction();
+                tagInfo.getBgOtherPaint().setAlpha(0);
+                tagInfo.getBgCenterPaint().setAlpha((int) (-255 * fraction + 255));
+                tagInfo.getTextPaint().setAlpha((int) (-255 * fraction + 255));
+                target.invalidate();
+            }
+        });
+
+        valueAnimator.setDuration(duration);
+
+        return valueAnimator;
+    }
+
+    public ValueAnimator getAlphaTo255Animator(final SubTagView target, int duration) {
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+
+
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            private SubTag tagInfo = target.getSubTag();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                float fraction = animation.getAnimatedFraction();
+                tagInfo.getBgOtherPaint().setAlpha((int) (255 * fraction));
+                tagInfo.getBgCenterPaint().setAlpha((int) (255 * fraction));
+                tagInfo.getTextPaint().setAlpha((int) (255 * fraction));
+                target.invalidate();
+            }
+        });
+
+        valueAnimator.setDuration(duration);
+
+        return valueAnimator;
+    }
+
+    public ValueAnimator getTranslateAnimator(final SubTagView target, boolean left, int duration) {
+        final ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
+        final int end;
+        if (left) {
+            end = (int) (-0.375 * BalloonMeasure.getBigRadius());
+        } else {
+            end = (int) (0.375 * BalloonMeasure.getBigRadius());
+        }
+
+        Log.d("lilingissb", String.valueOf(end));
+
+
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            private SubTag tagInfo = target.getSubTag();
+
+            Shader shader = new LinearGradient(
+                    0,
+                    0,
+                    (int)(BalloonMeasure.getBigRadius()*1.0625),
+                    (int)(BalloonMeasure.getBigRadius()*0.25),
+                    Color.parseColor("#54c4ff"),
+                    Color.parseColor("#3d73ff"),
+                    Shader.TileMode.CLAMP);
+
+            int targetOldLeft = target.getLeft();
+            int targetOldRight = target.getRight();
+            int targetOldTop = target.getTop();
+            int targetOldBottom = target.getBottom();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                float fraction = animation.getAnimatedFraction();
+                if (fraction <= 0.5) {
+                    if (fraction < 0.25) {
+                        tagInfo.getBgOtherPaint().setAlpha(0);
+                        tagInfo.getBgCenterPaint().setAlpha((int) (255 - fraction * 1020));
+                        tagInfo.getTextPaint().setAlpha((int) (255 - fraction * 1020));
+                    } else {
+                        tagInfo.getBgCenterPaint().setShader(shader);
+                        tagInfo.getBgOtherPaint().setShader(shader);
+                        tagInfo.getTextPaint().setColor(Color.parseColor("#ffffff"));
+                        tagInfo.getBgCenterPaint().setAlpha((int) (fraction * 1020 - 255));
+                        tagInfo.getTextPaint().setAlpha((int) (fraction * 1020 - 255));
+                    }
+
+                    target.layout((int) (targetOldLeft+fraction*2*end), targetOldTop, (int) (targetOldRight +fraction*2*end), targetOldBottom);
+                    Log.d("lilingissb", "target left : " +  target.getLeft());
+
+                } else {
+                    tagInfo.getBgOtherPaint().setAlpha(255);
+                    tagInfo.getLeftBall().setX(tagInfo.getCenterRect().getLeft() + 30 - fraction * 90 + 45);
+                    tagInfo.getRightRect().setLeft(tagInfo.getCenterRect().getLeft() + 105 + 90 * fraction - 45);
+
+                }
+                target.invalidate();
+            }
+        });
+
+        valueAnimator.setDuration(duration);
+        return valueAnimator;
+    }
+
+    public ValueAnimator getRetractionAnimator(final SubTagView target, int duration) {
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+
+
+        valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
+            private SubTag tagInfo = target.getSubTag();
+
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+
+                float fraction = animation.getAnimatedFraction();
+                tagInfo.getLeftBall().setX(tagInfo.getCenterRect().getLeft() - 15 + fraction * 45);
+                tagInfo.getRightRect().setLeft(tagInfo.getCenterRect().getLeft() + 150 - 45 * fraction);
+                target.invalidate();
+            }
+        });
+
+        valueAnimator.setDuration(duration);
+
+        return valueAnimator;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (mGestureCompat.onTouchEvent(event)) {
+            if (!this.getSubTag().isSelected()) {
+                final SubTag subTag = this.getSubTag();
+
+                //还有些别的什么逻辑
+                int index = this.getSubTag().getIndex();
+                Log.d("lilingissb", String.valueOf(index));
+                if (index == 2 || index == 4) {
+                    ValueAnimator animator = getTranslateAnimator(this, false, 1000);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            subTag.isSelected = true;
+                        }
+                    });
+                    animator.start();
+                } else {
+                    ValueAnimator animator = getTranslateAnimator(this, true, 1000);
+                    animator.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            subTag.isSelected = true;
+                        }
+                    });
+                    animator.start();
+                }
+                this.setClickable(false);
+                return true;
+            }
+        }
+        return true;
+
+    }
+
+    public void reset() {
+        if (getSubTag() == null) {
+            return;
+        } else {
+            SubTag subTag = getSubTag();
+            if (subTag.isSelected()) {
+
+            } else {
+
+            }
+        }
     }
 }
