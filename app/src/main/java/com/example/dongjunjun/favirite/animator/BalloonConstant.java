@@ -38,6 +38,11 @@ public class BalloonConstant {
     public static final long BALLOON_SELECT_DURATION = 600;
     public static final long BALLOON_EXCHANGE_DELAY = 80;
 
+    //标签动画相关
+    public static final long SUBTAG_TRANSLATE_DURATION = 600;
+    public static final long SUBTAG_DISAPPEAR_DURATION = 240;
+    public static final long SUBTAG_APPEAR_DELAY = 240;
+    public static final long SUBTAG_APPEAR_DURATION = 240;
     /**
      * 获取所在行数
      *

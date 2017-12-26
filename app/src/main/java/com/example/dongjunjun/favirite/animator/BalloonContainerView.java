@@ -2,6 +2,7 @@ package com.example.dongjunjun.favirite.animator;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -33,6 +34,7 @@ import java.util.List;
 import static com.example.dongjunjun.favirite.animator.Balloon.State.NONE;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_CAPACITY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_EXCHANGE_DELAY;
+import static com.example.dongjunjun.favirite.animator.BalloonConstant.BALLOON_SELECT_DURATION;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.EVEN_TOP;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_DELAY;
 import static com.example.dongjunjun.favirite.animator.BalloonConstant.FLOW_MAX;
@@ -318,7 +320,7 @@ public class BalloonContainerView extends FrameLayout {
                             subTagView.layout((int) (centerX - 1.0625 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX - 0 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
                             break;
                         case 4:
-                            subTagView.layout((int) (centerX + 0 * mBalloonMeasure.getBigRadius()), (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX + 1.0625 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
+                            subTagView.layout(centerX, (int) (centerY - 0.125 * mBalloonMeasure.getBigRadius()), (int) (centerX + 1.0625 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.125 * mBalloonMeasure.getBigRadius()));
                             break;
                         case 5:
                             subTagView.layout((int) (centerX - 0.975 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.25 * mBalloonMeasure.getBigRadius()), (int) (centerX + 0.0875 * mBalloonMeasure.getBigRadius()), (int) (centerY + 0.5 * mBalloonMeasure.getBigRadius()));
@@ -446,27 +448,33 @@ public class BalloonContainerView extends FrameLayout {
                 AnimatorHelper.getInstance().playExchangeAnimator(mSelectBalloonView);
 
                 int oldTagCount = 6;
+                AnimatorSet animatorSet = new AnimatorSet();
                 for (int i = 0; i < oldTagCount; i++) {
                     final SubTagView subTagView = mSubTags.get(i);
                     //可以搞一个动画集一起跑
                     if (subTagView.getSubTag().isSelected()) {
                         subTagView.getRetractionAnimator(subTagView, (int) BALLOON_EXCHANGE_DELAY).start();
                     }
-                    ValueAnimator animator = subTagView.getAlphaTo0Animator(subTagView, 300);
+                    ValueAnimator animator = subTagView.getAlphaTo0Animator(subTagView,  (int) BalloonConstant.SUBTAG_DISAPPEAR_DURATION);
                     animator.setStartDelay(BALLOON_EXCHANGE_DELAY);
-                    animator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            resetSubTagView(newTagCount);
-                            ValueAnimator animator1 = subTagView.getAlphaTo255Animator(subTagView, 300);
-                            animator1.setStartDelay(300);
-                            animator1.start();
-                        }
-                    });
-                    animator.start();
+                    animatorSet.playTogether(animator);
                 }
 
+                animatorSet.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+
+                        resetSubTagView(newTagCount);
+                        for (int i = 0; i< newTagCount; i++) {
+                            SubTagView subTagView = mSubTags.get(i);
+                            ValueAnimator animator1 = subTagView.getAlphaTo255Animator(subTagView,  (int) BalloonConstant.SUBTAG_APPEAR_DURATION);
+                            animator1.setStartDelay( (int) BalloonConstant.SUBTAG_APPEAR_DELAY);
+                            animator1.start();
+                        }
+                    }
+                });
+                animatorSet.start();
 
             } else {
                 Balloon normalBalloon = balloonView.getModel();
@@ -483,13 +491,16 @@ public class BalloonContainerView extends FrameLayout {
                 //先设置每个view是否可点击
                 resetSubTagView(newTagCount);
                 for (int i = 0; i < newTagCount; i++) {
-                    mSubTags.get(i).setVisibility(VISIBLE);
+                    SubTagView subTagView = mSubTags.get(i);
                     SubTag subTag = mSubTags.get(i).getSubTag();
                     if (subTag.isSelected()) {
                         mSubTags.get(i).setClickable(false);
                     } else {
                         mSubTags.get(i).setClickable(true);
                     }
+                    ValueAnimator animator = subTagView.getAlphaTo255Animator(subTagView, (int) BALLOON_SELECT_DURATION);
+                    animator.setStartDelay(BALLOON_SELECT_DURATION);
+                    animator.start();
                 }
 
             }
@@ -509,12 +520,15 @@ public class BalloonContainerView extends FrameLayout {
 
             Paint bgCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             bgCenterPaint.setColor(Color.parseColor("#f4f4f4"));
+            bgCenterPaint.setAlpha(0);
             Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             textPaint.setTextAlign(Paint.Align.CENTER);
             textPaint.setTextSize(BalloonConstant.SUBTAG_TEXT_SIZE);
             textPaint.setColor(Color.parseColor("#888888"));
+            textPaint.setAlpha(0);
             Paint bgOtherPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
+            bgOtherPaint.setAlpha(0);
             SubTag subTag = new SubTag(0, 0,
                     new BallInfo((int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.0625), (int)(BalloonMeasure.getBigRadius()*0.0625)),
                     new RectInfo((int)(BalloonMeasure.getBigRadius()*0.5625), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.0625)),
@@ -538,6 +552,9 @@ public class BalloonContainerView extends FrameLayout {
                 subTag.getBgOtherPaint().setShader(shader);
                 subTag.getBgCenterPaint().setShader(shader);
                 subTag.getTextPaint().setColor(Color.parseColor("#ffffff"));
+                subTag.getTextPaint().setAlpha(0);
+                subTag.getBgCenterPaint().setAlpha(0);
+                subTag.getBgOtherPaint().setAlpha(0);
             }
             subTag.setIndex(i);
             mSubTags.get(i).setSubTag(subTag);

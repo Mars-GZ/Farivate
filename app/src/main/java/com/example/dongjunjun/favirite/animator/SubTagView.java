@@ -101,7 +101,6 @@ public class SubTagView extends View {
         rectRight = subTag.getRightRect().toRect();
 
 
-
         int saved = canvas.saveLayer(null, null, Canvas.ALL_SAVE_FLAG);
         canvas.drawCircle(subTag.getLeftBall().getX(), subTag.getLeftBall().getY(), subTag.getLeftBall().getR(), mBgOtherPaint);
         canvas.drawRoundRect(rectRight, subTag.getRightRect().getR(), subTag.getRightRect().getR(), mBgOtherPaint);
@@ -130,8 +129,9 @@ public class SubTagView extends View {
     }
 
     public ValueAnimator getAlphaTo0Animator(final SubTagView target, int duration) {
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
 
+        valueAnimator.setDuration(duration);
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -148,14 +148,13 @@ public class SubTagView extends View {
             }
         });
 
-        valueAnimator.setDuration(duration);
-
         return valueAnimator;
     }
 
     public ValueAnimator getAlphaTo255Animator(final SubTagView target, int duration) {
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
 
+        valueAnimator.setDuration(duration);
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -163,6 +162,7 @@ public class SubTagView extends View {
 
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
+                target.setVisibility(VISIBLE);
 
                 float fraction = animation.getAnimatedFraction();
                 tagInfo.getBgOtherPaint().setAlpha((int) (255 * fraction));
@@ -171,8 +171,6 @@ public class SubTagView extends View {
                 target.invalidate();
             }
         });
-
-        valueAnimator.setDuration(duration);
 
         return valueAnimator;
     }
@@ -185,8 +183,7 @@ public class SubTagView extends View {
         } else {
             end = (int) (0.375 * BalloonMeasure.getBigRadius());
         }
-
-        Log.d("lilingissb", String.valueOf(end));
+        valueAnimator.setDuration(duration);
 
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
@@ -196,8 +193,8 @@ public class SubTagView extends View {
             Shader shader = new LinearGradient(
                     0,
                     0,
-                    (int)(BalloonMeasure.getBigRadius()*1.0625),
-                    (int)(BalloonMeasure.getBigRadius()*0.25),
+                    (int) (BalloonMeasure.getBigRadius() * 1.0625),
+                    (int) (BalloonMeasure.getBigRadius() * 0.25),
                     Color.parseColor("#54c4ff"),
                     Color.parseColor("#3d73ff"),
                     Shader.TileMode.CLAMP);
@@ -224,26 +221,25 @@ public class SubTagView extends View {
                         tagInfo.getTextPaint().setAlpha((int) (fraction * 1020 - 255));
                     }
 
-                    target.layout((int) (targetOldLeft+fraction*2*end), targetOldTop, (int) (targetOldRight +fraction*2*end), targetOldBottom);
-                    Log.d("lilingissb", "target left : " +  target.getLeft());
+                    target.layout((int) (targetOldLeft + fraction * 2 * end), targetOldTop, (int) (targetOldRight + fraction * 2 * end), targetOldBottom);
 
                 } else {
                     tagInfo.getBgOtherPaint().setAlpha(255);
-                    tagInfo.getLeftBall().setX(tagInfo.getCenterRect().getLeft() + 30 - fraction * 90 + 45);
-                    tagInfo.getRightRect().setLeft(tagInfo.getCenterRect().getLeft() + 105 + 90 * fraction - 45);
+                    tagInfo.getLeftBall().setX((int)(tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius()*0.125 - fraction * BalloonMeasure.getBigRadius()*0.375 + BalloonMeasure.getBigRadius()*0.1875));
+                    tagInfo.getRightRect().setLeft((int)(tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius()*0.4375 + BalloonMeasure.getBigRadius()*0.375 * fraction - BalloonMeasure.getBigRadius()*0.1875));
 
                 }
                 target.invalidate();
             }
         });
 
-        valueAnimator.setDuration(duration);
         return valueAnimator;
     }
 
     public ValueAnimator getRetractionAnimator(final SubTagView target, int duration) {
-        ValueAnimator valueAnimator = ValueAnimator.ofInt(1, 100);
+        ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
 
+        valueAnimator.setDuration(duration);
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
@@ -253,13 +249,11 @@ public class SubTagView extends View {
             public void onAnimationUpdate(ValueAnimator animation) {
 
                 float fraction = animation.getAnimatedFraction();
-                tagInfo.getLeftBall().setX(tagInfo.getCenterRect().getLeft() - 15 + fraction * 45);
-                tagInfo.getRightRect().setLeft(tagInfo.getCenterRect().getLeft() + 150 - 45 * fraction);
+                tagInfo.getLeftBall().setX((int)(tagInfo.getCenterRect().getLeft() - BalloonMeasure.getBigRadius()*0.0625 + fraction * BalloonMeasure.getBigRadius()*0.1875));
+                tagInfo.getRightRect().setLeft((int)(tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius()*0.625 - BalloonMeasure.getBigRadius()*0.1875 * fraction));
                 target.invalidate();
             }
         });
-
-        valueAnimator.setDuration(duration);
 
         return valueAnimator;
     }
@@ -272,24 +266,24 @@ public class SubTagView extends View {
 
                 //还有些别的什么逻辑
                 int index = this.getSubTag().getIndex();
-                Log.d("lilingissb", String.valueOf(index));
+                subTag.isSelected = true;
                 if (index == 2 || index == 4) {
-                    ValueAnimator animator = getTranslateAnimator(this, false, 1000);
+                    ValueAnimator animator = getTranslateAnimator(this, false,  (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION);
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            subTag.isSelected = true;
+
                         }
                     });
                     animator.start();
                 } else {
-                    ValueAnimator animator = getTranslateAnimator(this, true, 1000);
+                    ValueAnimator animator = getTranslateAnimator(this, true, (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION);
                     animator.addListener(new AnimatorListenerAdapter() {
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             super.onAnimationEnd(animation);
-                            subTag.isSelected = true;
+                            //subTag.isSelected = true;
                         }
                     });
                     animator.start();
@@ -300,18 +294,5 @@ public class SubTagView extends View {
         }
         return true;
 
-    }
-
-    public void reset() {
-        if (getSubTag() == null) {
-            return;
-        } else {
-            SubTag subTag = getSubTag();
-            if (subTag.isSelected()) {
-
-            } else {
-
-            }
-        }
     }
 }
