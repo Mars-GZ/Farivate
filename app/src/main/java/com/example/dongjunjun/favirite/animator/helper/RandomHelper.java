@@ -36,7 +36,7 @@ public class RandomHelper {
     static final int[] directions = new int[]{N, S, E, W, WN, WS, EN, ES};
 
     //气泡颜色
-    static final int[][] color = new int[][]{{0xffffdb00, 0xffffa400}, {0xff00daae, 0xff1ddb1a},
+    public static final int[][] color = new int[][]{{0xffffdb00, 0xffffa400}, {0xff00daae, 0xff1ddb1a},
             {0xff54c4ff, 0xff3d73ff}, {0xffffaa5a, 0xffff566f}};
 
     //文字颜色
@@ -131,7 +131,7 @@ public class RandomHelper {
         }
     }
 
-    private static int getColorPosition(Balloon balloon) {
+    public static int getColorPosition(Balloon balloon) {
         if (balloon == null) {
             return 0;
         }
@@ -186,7 +186,7 @@ public class RandomHelper {
         }
     }
 
-    public static void setTagTextColor(Tag tag){
+    public static void setTagTextColor(Tag tag) {
         boolean isSelected = tag.isSelected();
         int pos = getColorPosition((Balloon) tag.getParent());
         if (tag == null) {

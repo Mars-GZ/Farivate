@@ -21,6 +21,8 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
+import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
+
 /**
  * Created by dongjunjun on 2017/12/14.
  */
@@ -175,7 +177,7 @@ public class SubTagView extends View {
         return valueAnimator;
     }
 
-    public ValueAnimator getTranslateAnimator(final SubTagView target, boolean left, int duration) {
+    public ValueAnimator getTranslateAnimator(final SubTagView target, boolean left, int duration, Balloon balloon) {
         final ValueAnimator valueAnimator = ValueAnimator.ofInt(0, 100);
         final int end;
         if (left) {
@@ -183,21 +185,23 @@ public class SubTagView extends View {
         } else {
             end = (int) (0.375 * BalloonMeasure.getBigRadius());
         }
+
+        Log.d("lilingissb", String.valueOf(end));
         valueAnimator.setDuration(duration);
+
+        int pos = RandomHelper.getColorPosition(balloon);
+        RectF rectF = new RectF();
+        rectF.set(0,0,(int)(1.0625*BalloonMeasure.getBigRadius()),(int)(0.25*BalloonMeasure.getBigRadius()));
+        final LinearGradient shader = new LinearGradient(rectF.left, rectF.top, rectF.right, rectF.bottom,
+                RandomHelper.color[pos], null, Shader.TileMode.CLAMP);
+        Log.d("lilingissb", String.valueOf(target.getLeft()));
 
 
         valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 
             private SubTag tagInfo = target.getSubTag();
 
-            Shader shader = new LinearGradient(
-                    0,
-                    0,
-                    (int) (BalloonMeasure.getBigRadius() * 1.0625),
-                    (int) (BalloonMeasure.getBigRadius() * 0.25),
-                    Color.parseColor("#54c4ff"),
-                    Color.parseColor("#3d73ff"),
-                    Shader.TileMode.CLAMP);
+
 
             int targetOldLeft = target.getLeft();
             int targetOldRight = target.getRight();
@@ -220,16 +224,18 @@ public class SubTagView extends View {
                         tagInfo.getBgCenterPaint().setAlpha((int) (fraction * 1020 - 255));
                         tagInfo.getTextPaint().setAlpha((int) (fraction * 1020 - 255));
                     }
-
-                    target.layout((int) (targetOldLeft + fraction * 2 * end), targetOldTop, (int) (targetOldRight + fraction * 2 * end), targetOldBottom);
+                    int value = (int) animation.getAnimatedValue();
+                    target.layout((int) (targetOldLeft + 2*fraction*end), targetOldTop, (int)(targetOldRight + 2*fraction*end), targetOldBottom);
 
                 } else {
+                    target.layout((targetOldLeft + end), targetOldTop, (targetOldRight +end), targetOldBottom);
                     tagInfo.getBgOtherPaint().setAlpha(255);
                     tagInfo.getLeftBall().setX((int)(tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius()*0.125 - fraction * BalloonMeasure.getBigRadius()*0.375 + BalloonMeasure.getBigRadius()*0.1875));
                     tagInfo.getRightRect().setLeft((int)(tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius()*0.4375 + BalloonMeasure.getBigRadius()*0.375 * fraction - BalloonMeasure.getBigRadius()*0.1875));
 
                 }
                 target.invalidate();
+                Log.d("lilingissb", String.valueOf(target.getLeft()));
             }
         });
 
@@ -263,29 +269,13 @@ public class SubTagView extends View {
         if (mGestureCompat.onTouchEvent(event)) {
             if (!this.getSubTag().isSelected()) {
                 final SubTag subTag = this.getSubTag();
-
-                //还有些别的什么逻辑
                 int index = this.getSubTag().getIndex();
                 subTag.isSelected = true;
                 if (index == 2 || index == 4) {
-                    ValueAnimator animator = getTranslateAnimator(this, false,  (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION);
-                    animator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-
-                        }
-                    });
+                    ValueAnimator animator = getTranslateAnimator(this, false,  (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION, (Balloon) this.getSubTag().getParent());
                     animator.start();
                 } else {
-                    ValueAnimator animator = getTranslateAnimator(this, true, (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION);
-                    animator.addListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            //subTag.isSelected = true;
-                        }
-                    });
+                    ValueAnimator animator = getTranslateAnimator(this, true, (int) BalloonConstant.SUBTAG_TRANSLATE_DURATION, (Balloon) this.getSubTag().getParent());
                     animator.start();
                 }
                 this.setClickable(false);
