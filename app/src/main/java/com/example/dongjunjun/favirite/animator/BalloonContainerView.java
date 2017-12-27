@@ -355,7 +355,7 @@ public class BalloonContainerView extends FrameLayout {
     @Override
     public void bringChildToFront(View child) {
         if (child instanceof BalloonView) {
-            changeBalloonToFront((BalloonView) child);
+//            changeBalloonToFront((BalloonView) child);
         }
         super.bringChildToFront(child);
         if (child instanceof BalloonView) {

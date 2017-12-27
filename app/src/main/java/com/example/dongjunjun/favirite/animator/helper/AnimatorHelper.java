@@ -55,7 +55,9 @@ public class AnimatorHelper {
             return;
         }
         animatorSet = new AnimatorSet();
-        for (BalloonView balloonView : balloons) {
+        int size = balloons.size();
+        for (int i = 0; i < size; i++) {
+            BalloonView balloonView = balloons.get(i);
             if (balloonView == null || balloonView.getModel() == null) {
                 return;
             }
@@ -77,7 +79,7 @@ public class AnimatorHelper {
             return;
         }
         exchangeAnimator = balloonView.getAnimator();
-        exchangeAnimator.setDuration(BALLOON_SELECT_DURATION-BALLOON_EXCHANGE_DELAY);
+        exchangeAnimator.setDuration(BALLOON_SELECT_DURATION - BALLOON_EXCHANGE_DELAY);
         exchangeAnimator.setStartDelay(BALLOON_EXCHANGE_DELAY);
         exchangeAnimator.start();
     }
@@ -86,13 +88,13 @@ public class AnimatorHelper {
         if (isRunning(animatorSet)) {
             animatorSet.cancel();
         }
-        if (isRunning(exchangeAnimator)){
+        if (isRunning(exchangeAnimator)) {
             exchangeAnimator.cancel();
         }
     }
 
-    public boolean isRunning(Animator animator){
-        return animator!=null&&(animator.isStarted()||animator.isRunning());
+    public boolean isRunning(Animator animator) {
+        return animator != null && (animator.isStarted() || animator.isRunning());
     }
 
     private static class AnimatorHelperHolder {

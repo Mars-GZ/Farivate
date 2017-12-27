@@ -215,10 +215,6 @@ public class BalloonView extends FrameLayout {
                 break;
             case NORMAL_TO_EXPAND:
                 mBalloon.setSmallPosition(measure.getSmallPosition(mBalloon.getNum()));
-                targetR = measure.getBigRadius();
-                targetX = measure.getBigLeftMargin();
-                targetY = measure.getBigTopMargin();
-                break;
             case SMALL_TO_EXPAND:
                 targetR = measure.getBigRadius();
                 targetX = measure.getBigLeftMargin();
