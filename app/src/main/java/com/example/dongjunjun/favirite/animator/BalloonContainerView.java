@@ -85,7 +85,7 @@ public class BalloonContainerView extends FrameLayout {
         mBalloonMeasure = new BalloonMeasure();
         setClipChildren(false);
 
-        for (int i = 0; i< SubTag.SUBTAG_CAPACITY; i++) {
+        for (int i = 0; i < SubTag.SUBTAG_CAPACITY; i++) {
             SubTagView subTagView = new SubTagView(getContext());
             mSubTags.add(subTagView);
             addView(subTagView);
@@ -195,7 +195,6 @@ public class BalloonContainerView extends FrameLayout {
         mBalloonMeasure.setCounts(mBalloons.size());
         mBalloonMeasure.setLines(getRawCount());
         mBalloonMeasure.calculateMargin();
-
 
 
     }
@@ -456,7 +455,7 @@ public class BalloonContainerView extends FrameLayout {
                     if (subTagView.getSubTag().isSelected()) {
                         subTagView.getRetractionAnimator(subTagView, (int) BALLOON_EXCHANGE_DELAY).start();
                     }
-                    ValueAnimator animator = subTagView.getAlphaTo0Animator(subTagView,  (int) BalloonConstant.SUBTAG_DISAPPEAR_DURATION);
+                    ValueAnimator animator = subTagView.getAlphaTo0Animator(subTagView, (int) BalloonConstant.SUBTAG_DISAPPEAR_DURATION);
                     animator.setStartDelay(BALLOON_EXCHANGE_DELAY);
                     animatorSet.playTogether(animator);
                 }
@@ -467,10 +466,10 @@ public class BalloonContainerView extends FrameLayout {
                         super.onAnimationEnd(animation);
 
                         resetSubTagView(newTagCount, balloonView);
-                        for (int i = 0; i< newTagCount; i++) {
+                        for (int i = 0; i < newTagCount; i++) {
                             SubTagView subTagView = mSubTags.get(i);
-                            ValueAnimator animator1 = subTagView.getAlphaTo255Animator(subTagView,  (int) BalloonConstant.SUBTAG_APPEAR_DURATION);
-                            animator1.setStartDelay( (int) BalloonConstant.SUBTAG_APPEAR_DELAY);
+                            ValueAnimator animator1 = subTagView.getAlphaTo255Animator(subTagView, (int) BalloonConstant.SUBTAG_APPEAR_DURATION);
+                            animator1.setStartDelay((int) BalloonConstant.SUBTAG_APPEAR_DELAY);
                             animator1.start();
                         }
                     }
@@ -503,7 +502,7 @@ public class BalloonContainerView extends FrameLayout {
         }
     }
 
-    private void resetSubTagView(int newTagCount , BalloonView balloonView) {
+    private void resetSubTagView(int newTagCount, BalloonView balloonView) {
 
 
         for (int i = newTagCount; i < SubTag.SUBTAG_CAPACITY; i++) {
@@ -525,20 +524,20 @@ public class BalloonContainerView extends FrameLayout {
             bgOtherPaint.setColor(Color.parseColor("#f4f4f4"));
             bgOtherPaint.setAlpha(0);
             SubTag subTag = new SubTag(0, 0,
-                    new BallInfo((int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.0625), (int)(BalloonMeasure.getBigRadius()*0.0625)),
-                    new RectInfo((int)(BalloonMeasure.getBigRadius()*0.5625), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.125), (int)(BalloonMeasure.getBigRadius()*0.0625)),
-                    new RectInfo((int)(BalloonMeasure.getBigRadius()*0.125), 0, (int)(BalloonMeasure.getBigRadius()*0.8125), (int)(BalloonMeasure.getBigRadius()*0.25), (int)(BalloonMeasure.getBigRadius()*0.125)),
-                    "搞笑帮追",
+                    new BallInfo((int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.0625), (int) (BalloonMeasure.getBigRadius() * 0.0625)),
+                    new RectInfo((int) (BalloonMeasure.getBigRadius() * 0.5625), (int) (BalloonMeasure.getBigRadius() * 0.125), (int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.125), (int) (BalloonMeasure.getBigRadius() * 0.0625)),
+                    new RectInfo((int) (BalloonMeasure.getBigRadius() * 0.125), 0, (int) (BalloonMeasure.getBigRadius() * 0.8125), (int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.125)),
+                    "搞笑",
                     textPaint,
                     bgCenterPaint,
                     bgOtherPaint
             );
             if (subTag.isSelected()) {
-                subTag.getLeftBall().setX((int)(BalloonMeasure.getBigRadius()*0.0625));
-                subTag.getRightRect().setLeft((int)(BalloonMeasure.getBigRadius()*0.75));
+                subTag.getLeftBall().setX((int) (BalloonMeasure.getBigRadius() * 0.0625));
+                subTag.getRightRect().setLeft((int) (BalloonMeasure.getBigRadius() * 0.75));
                 int pos = RandomHelper.getColorPosition(balloonView.getModel());
                 RectF rectF = new RectF();
-                rectF.set(0,0,(int)(1.0625*BalloonMeasure.getBigRadius()),(int)(0.25*BalloonMeasure.getBigRadius()));
+                rectF.set(0, 0, (int) (1.0625 * BalloonMeasure.getBigRadius()), (int) (0.25 * BalloonMeasure.getBigRadius()));
                 LinearGradient shader = new LinearGradient(rectF.left, rectF.top, rectF.right, rectF.bottom,
                         RandomHelper.color[pos], null, Shader.TileMode.CLAMP);
                 subTag.getBgOtherPaint().setShader(shader);
@@ -548,6 +547,7 @@ public class BalloonContainerView extends FrameLayout {
                 subTag.getBgCenterPaint().setAlpha(0);
                 subTag.getBgOtherPaint().setAlpha(0);
             }
+            changeSubTagSize(subTag);
             subTag.setIndex(i);
             subTag.setParent(balloonView.getModel());
             mSubTags.get(i).setSubTag(subTag);
@@ -558,9 +558,46 @@ public class BalloonContainerView extends FrameLayout {
             }
 
         }
+    }
 
-
-
+    private void changeSubTagSize(SubTag subTag) {
+        int index = subTag.getIndex();
+        if (subTag.getText().length() == 3) {
+            if (index == 0) {
+                subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX() + 0.0625 * BalloonMeasure.getBigRadius()));
+                subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft() - 0.0625 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft() + 0.0625 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.125 * BalloonMeasure.getBigRadius()));
+            } else if (index == 1 || index == 3 || index == 5) {
+                //subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX()+0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft() - 0.125 * BalloonMeasure.getBigRadius()));
+                //subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft()+0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.125 * BalloonMeasure.getBigRadius()));
+            } else {
+                subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX() + 0.125 * BalloonMeasure.getBigRadius()));
+                //subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft()-0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft() + 0.125 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.125 * BalloonMeasure.getBigRadius()));
+            }
+        }
+        if (subTag.getText().length() == 2) {
+            if (index == 0) {
+                subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX() + 0.125 * BalloonMeasure.getBigRadius()));
+                subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft() - 0.125 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft() + 0.125 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.25 * BalloonMeasure.getBigRadius()));
+            } else if (index == 1 || index == 3 || index == 5) {
+                //subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX()+0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft() - 0.25 * BalloonMeasure.getBigRadius()));
+                //subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft()+0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.25 * BalloonMeasure.getBigRadius()));
+            } else {
+                subTag.getLeftBall().setX((float) (subTag.getLeftBall().getX() + 0.25 * BalloonMeasure.getBigRadius()));
+                //subTag.getRightRect().setLeft((float) (subTag.getRightRect().getLeft()-0.0625*BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setLeft((float) (subTag.getCenterRect().getLeft() + 0.25 * BalloonMeasure.getBigRadius()));
+                subTag.getCenterRect().setWidth((float) (subTag.getCenterRect().getWidth() - 0.25 * BalloonMeasure.getBigRadius()));
+            }
+        }
     }
 
     private void changePosition(BalloonView balloonView) {
