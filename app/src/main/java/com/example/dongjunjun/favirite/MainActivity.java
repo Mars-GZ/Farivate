@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mBalloonContainer = findViewById(R.id.test);
         for (int i = 0; i < 20; i++) {
-            mBalloonContainer.addBalloon("是" + i);
+            mBalloonContainer.addBalloon("11111111111111" + i);
         }
         mBalloonContainer.post(new Runnable() {
             @Override

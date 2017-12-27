@@ -23,6 +23,7 @@ import com.example.dongjunjun.favirite.animator.event.FlowEvent;
 import com.example.dongjunjun.favirite.animator.event.SelectBalloonEvent;
 import com.example.dongjunjun.favirite.animator.helper.AnimatorHelper;
 import com.example.dongjunjun.favirite.animator.helper.RandomHelper;
+import com.example.dongjunjun.favirite.animator.helper.TextHelper;
 import com.example.dongjunjun.favirite.animator.listener.BalloonItemClickListener;
 
 import org.greenrobot.eventbus.EventBus;
@@ -97,7 +98,7 @@ public class BalloonView extends FrameLayout {
     }
 
     public void setText(String text) {
-        mMajorTag.setText(text);
+        mMajorTag.setText(TextHelper.processBalloonText(text,mBalloon));
     }
 
     @Override

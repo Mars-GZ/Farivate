@@ -115,6 +115,7 @@ public class BalloonContainerView extends FrameLayout {
     public void setRawHeight(int rawHeight) {
         this.rawHeight = rawHeight;
         mBalloonMeasure.setRawHeight(rawHeight);
+        mBalloonMeasure.measure();
     }
 
     public void addBalloon(String text) {
@@ -123,8 +124,8 @@ public class BalloonContainerView extends FrameLayout {
 
     public void addBalloon(int i, String text) {
         BalloonView balloonView = new BalloonView(getContext());
-        balloonView.setText(text);
         addBalloon(i, balloonView);
+        balloonView.setText(text);
     }
 
     public void addBalloon(BalloonView balloonView) {

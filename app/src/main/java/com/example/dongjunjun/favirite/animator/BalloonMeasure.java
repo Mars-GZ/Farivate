@@ -63,13 +63,16 @@ public class BalloonMeasure {
     }
 
     public void calculateMargin() {
+        int raw = balloon_counts / 2;//变成小球后的行数
+        int height = lines * rawHeight;//总高度
+        small_margin = (height - raw * 2 * small_radius - top_margin - bottom_margin) / (raw - 1);
+    }
+
+    public void measure(){
         small_radius = (int) (rawHeight * SMALL_RADIUS / 2);
         big_radius = (int) (rawHeight * BIG_RADIUS / 2);
         top_margin = (int) (rawHeight * TOP_MARGIN);
         bottom_margin = (int) (rawHeight * BOTTOM_MARGIN);
-        int raw = balloon_counts / 2;//变成小球后的行数
-        int height = lines * rawHeight;//总高度
-        small_margin = (height - raw * 2 * small_radius - top_margin - bottom_margin) / (raw - 1);
     }
 
     /**
