@@ -527,7 +527,7 @@ public class BalloonContainerView extends FrameLayout {
                     new BallInfo((int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.0625), (int) (BalloonMeasure.getBigRadius() * 0.0625)),
                     new RectInfo((int) (BalloonMeasure.getBigRadius() * 0.5625), (int) (BalloonMeasure.getBigRadius() * 0.125), (int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.125), (int) (BalloonMeasure.getBigRadius() * 0.0625)),
                     new RectInfo((int) (BalloonMeasure.getBigRadius() * 0.125), 0, (int) (BalloonMeasure.getBigRadius() * 0.8125), (int) (BalloonMeasure.getBigRadius() * 0.25), (int) (BalloonMeasure.getBigRadius() * 0.125)),
-                    "搞笑",
+                    "abc",
                     textPaint,
                     bgCenterPaint,
                     bgOtherPaint

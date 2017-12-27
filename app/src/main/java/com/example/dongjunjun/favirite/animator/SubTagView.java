@@ -174,6 +174,15 @@ public class SubTagView extends View {
                 target.invalidate();
             }
         });
+        valueAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                target.getSubTag().getBgOtherPaint().setAlpha(255);
+                target.getSubTag().getBgCenterPaint().setAlpha(255);
+                target.getSubTag().getTextPaint().setAlpha(255);
+            }
+        });
 
         return valueAnimator;
     }
@@ -236,6 +245,8 @@ public class SubTagView extends View {
                 } else {
                     target.layout((targetOldLeft + end), targetOldTop, (targetOldRight + end), targetOldBottom);
                     tagInfo.getBgOtherPaint().setAlpha(255);
+                    tagInfo.getBgCenterPaint().setAlpha(255);
+                    tagInfo.getTextPaint().setAlpha(255);
                     tagInfo.getLeftBall().setX((int) (tagInfo.getCenterRect().getLeft() + BalloonMeasure.getBigRadius() * 0.125 - fraction * BalloonMeasure.getBigRadius() * 0.375 + BalloonMeasure.getBigRadius() * 0.1875));
                     tagInfo.getRightRect().setLeft((int) (tagInfo.getCenterRect().getLeft() + finalX + BalloonMeasure.getBigRadius() * 0.375 * fraction - BalloonMeasure.getBigRadius() * 0.1875));
 
